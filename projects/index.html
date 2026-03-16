@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowledge Pipeline — Sadegh Mousavi</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a09;
+    --fg: #d4d0c8;
+    --fg-dim: #6b6860;
+    --fg-ghost: #3a3830;
+    --ochre: #3a8a65;
+    --ochre-dim: rgba(45,107,79,0.12);
+    --rule: rgba(212,208,200,0.06);
+    --serif: 'Instrument Serif', serif;
+    --body: 'Source Serif 4', serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--ochre);
+    color: var(--bg);
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 100;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 180px;
+  }
+
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 12vh 28px 10vh;
+    position: relative;
+  }
+
+  .author {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 64px;
+    opacity: 0;
+    animation: arrive 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  }
+  .author a {
+    color: var(--fg-dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--fg-ghost);
+    transition: color 0.4s, border-color 0.4s;
+  }
+  .author a:hover {
+    color: var(--ochre);
+    border-color: var(--ochre);
+  }
+
+  .title-block {
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: arrive 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(36px, 6.5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--fg);
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--ochre);
+  }
+
+  .subtitle {
+    font-family: var(--body);
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--fg-dim);
+    max-width: 540px;
+    margin-top: 28px;
+  }
+
+  .thesis {
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 36px 0;
+    margin-bottom: 72px;
+    opacity: 0;
+    animation: arrive 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
+  }
+  .thesis p {
+    font-family: var(--body);
+    font-size: 15px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.75;
+    color: var(--fg-dim);
+    max-width: 560px;
+  }
+  .thesis p span {
+    color: var(--fg);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-ghost);
+    margin-bottom: 40px;
+  }
+
+  .pipeline {
+    position: relative;
+    padding-left: 48px;
+  }
+  .pipeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      var(--fg-ghost) 0%,
+      var(--ochre-dim) 35%,
+      var(--ochre) 55%,
+      var(--ochre-dim) 75%,
+      var(--fg-ghost) 100%
+    );
+  }
+
+  .n {
+    position: relative;
+    padding: 22px 0 28px;
+    border-bottom: 1px solid var(--rule);
+    cursor: default;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .n.vis {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .n::before {
+    content: '';
+    position: absolute;
+    left: -52px;
+    top: 30px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--fg-ghost);
+    transition: background 0.5s, box-shadow 0.5s;
+  }
+  .n.transform::before {
+    background: var(--ochre);
+  }
+  .n:hover::before {
+    background: var(--ochre);
+    box-shadow: 0 0 12px rgba(45,107,79,0.3);
+  }
+
+  .n-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+
+  .n-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--fg-ghost);
+    min-width: 20px;
+    transition: color 0.4s;
+  }
+  .n:hover .n-num { color: var(--fg-dim); }
+
+  .n-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    transition: color 0.4s;
+  }
+  .n.transform .n-title { color: var(--ochre); }
+  .n:hover .n-title { color: var(--ochre); }
+
+  .n-type {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-ghost);
+    margin-left: auto;
+    transition: color 0.4s;
+  }
+  .n:hover .n-type { color: var(--fg-dim); }
+
+  .n-desc {
+    font-family: var(--body);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--fg-dim);
+    padding-left: 36px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s, padding-top 0.4s;
+    padding-top: 0;
+  }
+  .n:hover .n-desc {
+    max-height: 120px;
+    opacity: 1;
+    padding-top: 8px;
+  }
+
+  .outputs {
+    margin-top: 72px;
+    margin-bottom: 72px;
+    opacity: 0;
+    animation: arrive 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+  }
+
+  .out-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    margin-top: 32px;
+  }
+
+  .out {
+    background: var(--bg);
+    padding: 28px 20px;
+    transition: background 0.4s;
+  }
+  .out:hover {
+    background: rgba(45,107,79,0.03);
+  }
+
+  .out-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ochre);
+    margin-bottom: 10px;
+  }
+  .out-name {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--fg);
+    margin-bottom: 8px;
+  }
+  .out-desc {
+    font-family: var(--body);
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--fg-dim);
+  }
+
+  .cost {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 28px 0;
+    margin-bottom: 72px;
+  }
+  .cost-text {
+    font-family: var(--body);
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--fg-dim);
+  }
+  .cost-text span {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-ghost);
+    margin-top: 4px;
+  }
+  .cost-val {
+    font-family: var(--serif);
+    font-size: 48px;
+    font-style: italic;
+    color: var(--ochre);
+    letter-spacing: -0.03em;
+  }
+
+  .stack-section {
+    margin-bottom: 72px;
+  }
+  .stack-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-top: 24px;
+  }
+  .stack-item {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--fg-dim);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--rule);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transition: color 0.3s;
+  }
+  .stack-item:hover { color: var(--fg); }
+  .stack-item .role {
+    color: var(--fg-ghost);
+    font-size: 11px;
+  }
+
+  .foot {
+    border-top: 1px solid var(--rule);
+    padding-top: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .foot-left {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+    letter-spacing: 0.06em;
+  }
+  .foot-left a {
+    color: var(--fg-dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--fg-ghost);
+    transition: color 0.4s, border-color 0.4s;
+  }
+  .foot-left a:hover {
+    color: var(--ochre);
+    border-color: var(--ochre);
+  }
+  .foot-right {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-ghost);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @keyframes arrive {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 8vh 20px 8vh; }
+    .pipeline { padding-left: 36px; }
+    .n::before { left: -40px; }
+    .out-grid { grid-template-columns: 1fr; }
+    .cost { flex-direction: column; gap: 16px; }
+    .n-type { display: none; }
+    .n-desc { padding-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="author">
+    <a href="/">← Home</a> &nbsp;·&nbsp; Sadegh Mousavi
+  </div>
+
+  <div class="title-block">
+    <h1>YouTube to <em>Obsidian</em><br>knowledge pipeline</h1>
+    <p class="subtitle">An automated system that transforms video into structured thought — extracting concepts, causal chains, tensions, and assumptions, then generating a personal knowledge base designed for critical thinking.</p>
+  </div>
+
+  <div class="thesis">
+    <p>The premise is simple: <span>most knowledge is trapped in linear media.</span> A one-hour lecture contains perhaps twelve interconnected ideas, their causal relationships, and the tensions between them — but the format hides the structure. This pipeline makes that structure visible.</p>
+  </div>
+
+  <div class="section-label">Pipeline · 8 nodes</div>
+
+  <div class="pipeline">
+
+    <div class="n" data-i="0">
+      <div class="n-head">
+        <span class="n-num">01</span>
+        <span class="n-title">Trigger</span>
+        <span class="n-type">manual / webhook</span>
+      </div>
+      <div class="n-desc">Workflow entry point. Currently manual; upgradeable to a webhook that accepts any URL.</div>
+    </div>
+
+    <div class="n" data-i="1">
+      <div class="n-head">
+        <span class="n-num">02</span>
+        <span class="n-title">Define source</span>
+        <span class="n-type">set node</span>
+      </div>
+      <div class="n-desc">The YouTube URL is declared as a variable and passed downstream through the chain.</div>
+    </div>
+
+    <div class="n" data-i="2">
+      <div class="n-head">
+        <span class="n-num">03</span>
+        <span class="n-title">Extract transcript</span>
+        <span class="n-type">http request</span>
+      </div>
+      <div class="n-desc">GET request to a free transcript API. Returns timestamped segments as raw JSON.</div>
+    </div>
+
+    <div class="n transform" data-i="3">
+      <div class="n-head">
+        <span class="n-num">04</span>
+        <span class="n-title">Unify text</span>
+        <span class="n-type">code · javascript</span>
+      </div>
+      <div class="n-desc">Fragments become a single continuous string. The first transformation — raw data into readable form.</div>
+    </div>
+
+    <div class="n transform" data-i="4">
+      <div class="n-head">
+        <span class="n-num">05</span>
+        <span class="n-title">Extract structure</span>
+        <span class="n-type">gemini api</span>
+      </div>
+      <div class="n-desc">The core transformation. Gemini receives the transcript with a structured prompt and returns concepts, causal relationships, tensions, contradictions, and a reasoning spine — all as strict JSON.</div>
+    </div>
+
+    <div class="n" data-i="5">
+      <div class="n-head">
+        <span class="n-num">06</span>
+        <span class="n-title">Parse response</span>
+        <span class="n-type">code · javascript</span>
+      </div>
+      <div class="n-desc">Validate and extract the structured JSON from Gemini's nested response format.</div>
+    </div>
+
+    <div class="n transform" data-i="6">
+      <div class="n-head">
+        <span class="n-num">07</span>
+        <span class="n-title">Generate knowledge artifacts</span>
+        <span class="n-type">code · javascript</span>
+      </div>
+      <div class="n-desc">JSON becomes three distinct files: a visual mind map, an analytical breakdown, and a distilled summary. Structure becomes form.</div>
+    </div>
+
+    <div class="n" data-i="7">
+      <div class="n-head">
+        <span class="n-num">08</span>
+        <span class="n-title">Write to vault</span>
+        <span class="n-type">file system</span>
+      </div>
+      <div class="n-desc">Files are saved directly into the Obsidian vault. The knowledge exists now — searchable, linkable, alive.</div>
+    </div>
+
+  </div>
+
+  <div class="outputs">
+    <div class="section-label">Three outputs per source</div>
+    <div class="out-grid">
+      <div class="out">
+        <div class="out-label">.canvas</div>
+        <div class="out-name">Mind map</div>
+        <div class="out-desc">Visual chain-of-reasoning with spatial layout mapping argument flow and concept relationships</div>
+      </div>
+      <div class="out">
+        <div class="out-label">.md</div>
+        <div class="out-name">Full analysis</div>
+        <div class="out-desc">Analytical breakdown with causal chains, tensions, contradictions, and implicit assumptions</div>
+      </div>
+      <div class="out">
+        <div class="out-label">.md</div>
+        <div class="out-name">Quick reference</div>
+        <div class="out-desc">Distilled summary for rapid recall — the essential structure without the scaffolding</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cost">
+    <div class="cost-text">
+      Every component runs on free tiers
+      <span>n8n self-hosted · transcript api · gemini flash (1,500 req/day) · obsidian</span>
+    </div>
+    <div class="cost-val">$0</div>
+  </div>
+
+  <div class="stack-section">
+    <div class="section-label">Stack</div>
+    <div class="stack-row">
+      <div class="stack-item"><span>n8n</span><span class="role">orchestration</span></div>
+      <div class="stack-item"><span>Gemini 1.5 Flash</span><span class="role">concept extraction</span></div>
+      <div class="stack-item"><span>REST APIs</span><span class="role">transcript retrieval</span></div>
+      <div class="stack-item"><span>JavaScript</span><span class="role">data transformation</span></div>
+      <div class="stack-item"><span>Obsidian</span><span class="role">knowledge base</span></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="foot-left">
+      Sadegh Mousavi — <a href="https://sadeghmousavi.com">sadeghmousavi.com</a>
+    </div>
+    <div class="foot-right">Knowledge infrastructure</div>
+  </div>
+
+</div>
+
+<script>
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const d = parseInt(e.target.dataset.i || 0) * 70;
+      setTimeout(() => e.target.classList.add('vis'), d);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('.n').forEach(n => io.observe(n));
+</script>
+
+</body>
+</html>
