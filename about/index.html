@@ -3,352 +3,1338 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Weight Test</title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<title>Sadegh Mousavi</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  
   :root {
-    --bg: #0C0B0A;
-    --fg: #E8E4DC;
-    --muted: #6B665C;
-    --accent: #2D8E6E;
-    --accent-light: #3DB88E;
-    --warm: #BA7517;
+    --bg: #0a0b0d;
+    --text: #d0ccc4;
+    --text-bright: #eae6dc;
+    --text-dim: #6a665c;
+    --text-ghost: #2e2c28;
+    --green: #2d6b4f;
+    --green-bright: #3a8a65;
+    --green-glow: rgba(45, 107, 79, 0.15);
+    --serif: 'Cormorant', Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', sans-serif;
+    --mono: 'DM Mono', monospace;
   }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  ::selection {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  html { scroll-behavior: auto; }
 
   body {
     background: var(--bg);
-    color: var(--fg);
-    font-family: 'EB Garamond', serif;
+    color: var(--text);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background 0.8s ease, color 0.8s ease;
+  }
+
+  body.inverted {
+    --bg: #eae6dc;
+    --text: #2a2820;
+    --text-bright: #0a0b0d;
+    --text-dim: #6a665c;
+    --text-ghost: #c8c4ba;
+    --green: #1a5038;
+    --green-bright: #2d6b4f;
+    --green-glow: rgba(45, 107, 79, 0.1);
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  /* ─── NARRATIVE INTRO ─── */
+
+  .narrative {
+    position: relative;
+    z-index: 1;
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 15vh 3vw 0;
+  }
+
+  .narrative-label {
+    font-family: var(--mono);
+    font-size: 0.48rem;
+    font-weight: 300;
+    color: var(--green);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 1s ease-out 0.3s forwards;
+    transition: color 0.8s ease;
+  }
+
+  .narrative-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--text-ghost);
+    transition: background 0.8s ease;
+  }
+
+  .chapter {
+    margin-bottom: 8vh;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    max-width: 560px;
+  }
+
+  .chapter.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .chapter-text {
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: var(--text-dim);
+    line-height: 1.75;
+    transition: color 0.8s ease;
+  }
+
+  .chapter-text .bright {
+    color: var(--text-bright);
+    transition: color 0.8s ease;
+  }
+
+  /* The compass line — the thesis, stands apart */
+  .chapter--compass {
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+    max-width: 640px;
+    border-left: 2px solid var(--green);
+    padding-left: 2rem;
+    transition: border-color 0.8s ease;
+  }
+
+  .chapter--compass .chapter-text {
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 300;
+    color: var(--text-bright);
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    transition: color 0.8s ease;
+  }
+
+  /* Transition into spiral */
+  .narrative-bridge {
+    padding: 8vh 0 4vh;
+    border-top: 1px solid var(--text-ghost);
+    margin-top: 4vh;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out, border-color 0.8s ease;
+  }
+
+  .narrative-bridge.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .narrative-bridge-text {
+    font-family: var(--mono);
+    font-size: 0.48rem;
+    font-weight: 300;
+    color: var(--text-ghost);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.8s ease;
+  }
+
+  /* ─── SPIRAL CANVAS ─── */
+
+  #spiral-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ─── CONTENT ─── */
+
+  .content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── HERO ─── */
+
+  .hero {
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    overflow: hidden;
-  }
-
-  .canvas {
+    padding: 0 8vw;
     position: relative;
-    width: 100%;
-    max-width: 920px;
-    aspect-ratio: 16 / 10;
-    margin: 0 auto;
   }
 
-  /* === FULCRUM === */
-  .fulcrum {
-    position: absolute;
-    bottom: 14%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 16px solid transparent;
-    border-right: 16px solid transparent;
-    border-bottom: 26px solid var(--muted);
-    opacity: 0.35;
-  }
-
-  /* === BEAM — RIGHT sinks, LEFT floats === */
-  .beam {
-    position: absolute;
-    bottom: calc(14% + 26px);
-    left: 50%;
-    width: 76%;
-    height: 2px;
-    background: var(--muted);
-    transform-origin: center center;
-    opacity: 0.45;
-    animation: beam-settle 2.2s ease-out forwards;
-  }
-
-  @keyframes beam-settle {
-    0%   { transform: translateX(-50%) rotate(0deg); }
-    40%  { transform: translateX(-50%) rotate(9deg); }
-    70%  { transform: translateX(-50%) rotate(7deg); }
-    100% { transform: translateX(-50%) rotate(8deg); }
-  }
-
-  /* === CHAINS === */
-  .chain {
-    position: absolute;
-    width: 1px;
-    background: repeating-linear-gradient(
-      to bottom, var(--muted) 0px, var(--muted) 3px, transparent 3px, transparent 6px
-    );
-    opacity: 0.25;
-  }
-
-  .chain-left {
-    left: 19.5%;
-    bottom: calc(14% + 26px + 28px);
-    height: 70px;
-    animation: chain-grow 2.2s ease-out forwards;
-  }
-  @keyframes chain-grow { 0% { height: 40px; } 100% { height: 70px; } }
-
-  .chain-right {
-    right: 19.5%;
-    bottom: calc(14% + 26px - 28px);
-    height: 16px;
-    animation: chain-shrink 2.2s ease-out forwards;
-  }
-  @keyframes chain-shrink { 0% { height: 40px; } 100% { height: 16px; } }
-
-  /* === LEFT: HOLLOW CIRCLES — empty, floating === */
-  .ego-side {
-    position: absolute;
-    left: 3%;
-    top: 4%;
-    width: 38%;
-    height: 55%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: float-drift 5s ease-in-out infinite;
-  }
-
-  @keyframes float-drift {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-7px); }
-  }
-
-  .ego-cluster {
-    position: relative;
-    width: 280px;
-    height: 280px;
-  }
-
-  .hollow-circle {
-    position: absolute;
-    border-radius: 50%;
-    border: 0.5px solid rgba(186, 117, 23, 0.18);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .disorder-label {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    font-weight: 300;
+    color: var(--green);
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
     opacity: 0;
-    animation: bubble-in 1.6s ease-out forwards;
+    animation: fadeIn 1s ease-out 0.5s forwards;
   }
 
-  @keyframes bubble-in {
-    0% { opacity: 0; transform: scale(0.2); }
-    60% { opacity: 1; transform: scale(1.04); }
-    100% { opacity: 1; transform: scale(1); }
+  .hero-statement {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+    font-weight: 300;
+    color: var(--text-bright);
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    max-width: 720px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease-out 0.8s forwards;
+    transition: color 0.8s ease;
   }
 
-  .hollow-circle span {
-    font-style: italic;
-    color: var(--warm);
-    letter-spacing: 0.06em;
+  .hero-statement .ghost {
+    color: var(--text-dim);
+    transition: color 0.8s ease;
   }
 
-  .hc-1 {
-    width: 180px; height: 180px;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%) !important;
-    animation-delay: 0.2s;
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    margin-top: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s ease-out 1.3s forwards;
+    transition: color 0.8s ease;
   }
-  .hc-1::before {
-    content: '';
+
+  .scroll-prompt {
     position: absolute;
-    inset: -1px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, rgba(186, 117, 23, 0.04), transparent 70%);
-  }
-  .hc-1 span { font-size: 24px; opacity: 0.2; }
-
-  .hc-2 {
-    width: 90px; height: 90px;
-    top: 2%; right: 8%;
-    animation-delay: 0.5s;
-  }
-  .hc-2 span { font-size: 10px; opacity: 0.15; }
-
-  .hc-3 {
-    width: 65px; height: 65px;
-    bottom: 8%; left: 2%;
-    animation-delay: 0.8s;
-  }
-  .hc-3 span { font-size: 9px; opacity: 0.14; }
-
-  .hc-4 {
-    width: 42px; height: 42px;
-    top: 0%; left: 22%;
-    animation-delay: 1s;
+    bottom: 2.5rem;
+    left: 8vw;
+    font-family: var(--mono);
+    font-size: 0.48rem;
+    font-weight: 300;
+    color: var(--text-ghost);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeIn 1s ease-out 2s forwards;
+    transition: color 0.8s ease;
   }
 
-  .hc-5 {
-    width: 30px; height: 30px;
-    bottom: 20%; right: 5%;
-    animation-delay: 1.2s;
+  .scroll-prompt .arrow {
+    display: inline-block;
+    animation: drift 2s ease-in-out infinite;
+    margin-left: 0.4rem;
   }
 
-  /* === RIGHT: FILLED CIRCLES — dense, grounded === */
-  .data-side {
-    position: absolute;
-    right: 3%;
-    bottom: 16%;
-    width: 38%;
-    height: 55%;
+  /* ─── ORBIT SECTIONS ─── */
+
+  .orbit {
+    padding: 10vh 0;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out, color 0.8s ease;
+  }
+
+  .orbit.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .orbit-inner {
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* Progressive tightening */
+  .orbit--1 .orbit-inner { max-width: 1060px; padding: 0 3vw; }
+  .orbit--2 .orbit-inner { max-width: 860px; padding: 0 3vw; }
+  .orbit--3 .orbit-inner { max-width: 680px; padding: 0 3vw; }
+  .orbit--4 .orbit-inner { max-width: 520px; padding: 0 3vw; }
+
+  .orbit-marker {
+    font-family: var(--mono);
+    font-size: 0.48rem;
+    font-weight: 300;
+    color: var(--green);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 1rem;
+    transition: color 0.8s ease;
   }
 
-  .data-cluster {
-    position: relative;
-    width: 280px;
-    height: 260px;
+  .orbit-marker::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--text-ghost);
+    transition: background 0.8s ease;
   }
 
-  .filled-circle {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(45, 142, 110, 0.12);
-    border: 0.5px solid rgba(61, 184, 142, 0.25);
+  .orbit-title {
+    font-family: var(--serif);
+    font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+    font-weight: 300;
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.8rem;
+    transition: color 0.8s ease;
+  }
+
+  .orbit-title strong {
+    color: var(--green);
+    font-weight: 400;
+    transition: color 0.8s ease;
+  }
+
+  .orbit-body {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--text-dim);
+    margin-bottom: 2.5rem;
+    max-width: 460px;
+    transition: color 0.8s ease;
+  }
+
+  /* ─── PROJECTS ─── */
+
+  .projects {
     display: flex;
+    flex-direction: column;
+  }
+
+  .project {
+    padding: 1.2rem 0;
+    border-top: 1px solid var(--text-ghost);
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+    transition: background 0.3s, border-color 0.8s ease;
+    cursor: default;
+  }
+
+  .project:last-child {
+    border-bottom: 1px solid var(--text-ghost);
+  }
+
+  .project:hover {
+    background: var(--green-glow);
+  }
+
+  .project-where {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    font-weight: 300;
+    color: var(--text-ghost);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.6;
+    transition: color 0.8s ease;
+  }
+
+  .project-what {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--text);
+    transition: color 0.8s ease;
+  }
+
+  .project-what em {
+    color: var(--text-bright);
+    font-style: normal;
+    transition: color 0.8s ease;
+  }
+
+  .project-impact {
+    font-family: var(--mono);
+    font-size: 0.52rem;
+    font-weight: 400;
+    color: var(--green-bright);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    text-align: right;
+    transition: color 0.8s ease;
+  }
+
+  .orbit--3 .project,
+  .orbit--4 .project {
+    grid-template-columns: 85px 1fr;
+    gap: 0.8rem;
+  }
+
+  .orbit--3 .project-impact,
+  .orbit--4 .project-impact {
+    grid-column: 2;
+    text-align: left;
+    margin-top: -0.3rem;
+  }
+
+  /* ─── CONVERGENCE ─── */
+
+  .convergence {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    opacity: 0;
-    transform: translateY(12px);
+    padding: 0 2rem;
+    position: relative;
   }
 
-  .filled-circle span {
-    font-family: 'DM Mono', monospace;
-    font-weight: 400;
-    color: var(--accent-light);
-    letter-spacing: 0.03em;
-    line-height: 1.35;
-    padding: 15%;
-  }
-
-  @keyframes circle-land {
-    0% { opacity: 0; transform: translateY(14px) scale(0.9); }
-    65% { opacity: 1; transform: translateY(-2px) scale(1.02); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .fc-1 {
-    width: 190px; height: 190px;
-    top: 5%; left: 50%;
-    transform: translateX(-50%);
-    animation: circle-land 0.8s ease-out 1.1s forwards;
-    background: rgba(45, 142, 110, 0.1);
-    box-shadow: 0 0 40px rgba(45, 142, 110, 0.06);
-  }
-  .fc-1 span { font-size: 12.5px; }
-
-  .fc-2 {
-    width: 150px; height: 150px;
-    bottom: 8%; left: 5%;
-    animation: circle-land 0.8s ease-out 1.4s forwards;
-    background: rgba(45, 142, 110, 0.09);
-    box-shadow: 0 0 30px rgba(45, 142, 110, 0.05);
-  }
-  .fc-2 span { font-size: 11.5px; }
-
-  .fc-3 {
-    width: 130px; height: 130px;
-    bottom: 2%; right: 8%;
-    animation: circle-land 0.8s ease-out 1.7s forwards;
-    background: rgba(45, 142, 110, 0.08);
-    box-shadow: 0 0 25px rgba(45, 142, 110, 0.04);
-  }
-  .fc-3 span { font-size: 11px; }
-
-  /* Subtle glow behind entire data cluster */
-  .data-glow {
-    position: absolute;
-    width: 220px;
-    height: 220px;
+  .convergence-dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(45, 142, 110, 0.06), transparent 70%);
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    background: var(--green-bright);
+    margin-bottom: 2.5rem;
     opacity: 0;
-    animation: glow-in 1.5s ease-out 2.2s forwards;
+    transition: opacity 0.6s ease-out, background 0.8s ease, box-shadow 0.8s ease;
+    box-shadow:
+      0 0 12px rgba(58, 138, 101, 0.4),
+      0 0 30px rgba(58, 138, 101, 0.2),
+      0 0 60px rgba(58, 138, 101, 0.1);
   }
-  @keyframes glow-in {
+
+  .convergence.reached .convergence-dot {
+    opacity: 1;
+  }
+
+  .convergence-name {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 5.5vw, 4rem);
+    font-weight: 300;
+    color: var(--text-bright);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    opacity: 0;
+    transition: opacity 0.8s ease-out, color 0.8s ease;
+  }
+
+  .convergence.reached .convergence-name {
+    opacity: 1;
+  }
+
+  .convergence-line {
+    font-family: var(--serif);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text);
+    max-width: 580px;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+    margin-top: 2rem;
+    opacity: 0;
+    transition: opacity 0.8s ease-out 0.3s, color 0.8s ease;
+  }
+
+  .convergence-line em {
+    color: var(--green);
+    font-style: italic;
+    transition: color 0.8s ease;
+  }
+
+  .convergence.reached .convergence-line {
+    opacity: 1;
+  }
+
+  /* ─── THREE CIRCLES (operating range) ─── */
+
+  .circles-section {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 6vh 2rem 2vh;
+  }
+
+  .circles-block {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+
+  .circles-block.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .circles-label {
+    font-family: var(--mono);
+    font-size: 0.45rem;
+    font-weight: 300;
+    color: var(--green);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--text-ghost);
+    margin-bottom: 2.5rem;
+    transition: color 0.8s ease, border-color 0.8s ease;
+  }
+
+  .circles-visual {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 2.5rem;
+    opacity: 0;
+    transition: opacity 0.8s ease-out;
+  }
+
+  .circles-block.visible .circles-visual {
+    opacity: 1;
+  }
+
+  .circles-visual svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .circles-text {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-dim);
+    line-height: 1.8;
+    transition: color 0.8s ease;
+  }
+
+  .circles-text .bright {
+    color: var(--text-bright);
+    transition: color 0.8s ease;
+  }
+
+  /* ─── DUALITY SECTION (post-convergence, inverted world) ─── */
+
+  .duality {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .duality-block {
+    padding: 5vh 0;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+
+  .duality-block.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .duality-label {
+    font-family: var(--mono);
+    font-size: 0.45rem;
+    font-weight: 300;
+    color: var(--green);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--text-ghost);
+    margin-bottom: 2.5rem;
+    transition: color 0.8s ease, border-color 0.8s ease;
+  }
+
+  .duality-text {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    transition: color 0.8s ease;
+  }
+
+  .duality-text:last-child {
+    margin-bottom: 0;
+  }
+
+  .duality-text .bright {
+    color: var(--text-bright);
+    transition: color 0.8s ease;
+  }
+
+  .duality-closer {
+    font-family: var(--serif);
+    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+    font-weight: 300;
+    color: var(--text-bright);
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    margin-top: 2rem;
+    padding-left: 1.5rem;
+    border-left: 2px solid var(--green);
+    transition: color 0.8s ease, border-color 0.8s ease;
+  }
+
+  /* Dissolving box — canvas-based animation */
+  .box-visual {
+    margin: 3rem 0 1rem;
+    height: 160px;
+    position: relative;
+    opacity: 0;
+    transition: opacity 0.8s ease-out;
+  }
+
+  .box-visual.visible {
+    opacity: 1;
+  }
+
+  .box-visual canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Beliefs section */
+  .beliefs-block {
+    padding: 5vh 0 3vh;
+    border-top: 1px solid var(--text-ghost);
+    margin-top: 3vh;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out, border-color 0.8s ease;
+  }
+
+  .beliefs-block.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .beliefs-label {
+    font-family: var(--mono);
+    font-size: 0.45rem;
+    font-weight: 300;
+    color: var(--green);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    transition: color 0.8s ease;
+  }
+
+  /* Exponential curve visual */
+  .exp-visual {
+    margin: 1.5rem 0 2.5rem;
+    height: 120px;
+    position: relative;
+  }
+
+  .exp-visual canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ─── QUIET SECTIONS ─── */
+
+  .quiet-area {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 2rem 5vh;
+  }
+
+  .quiet-block {
+    padding: 3rem 0;
+    border-top: 1px solid var(--text-ghost);
+    opacity: 0;
+    transition: opacity 0.7s ease-out, border-color 0.8s ease;
+  }
+
+  .quiet-block.visible { opacity: 1; }
+
+  .quiet-label {
+    font-family: var(--mono);
+    font-size: 0.45rem;
+    font-weight: 300;
+    color: var(--green);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    transition: color 0.8s ease;
+  }
+
+  .edu-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+    transition: border-color 0.8s ease;
+  }
+
+  body.inverted .edu-row {
+    border-bottom-color: rgba(0,0,0,0.04);
+  }
+
+  .edu-row:last-child { border-bottom: none; }
+
+  .edu-name {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text);
+    transition: color 0.8s ease;
+  }
+
+  .edu-detail {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    text-align: right;
+    transition: color 0.8s ease;
+  }
+
+  .edu-detail .green { color: var(--green-bright); transition: color 0.8s ease; }
+
+  .tools-text {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    font-weight: 300;
+    color: var(--text-ghost);
+    line-height: 2.2;
+    transition: color 0.8s ease;
+  }
+
+  .tools-text span {
+    transition: color 0.2s;
+    cursor: default;
+  }
+
+  .tools-text span:hover {
+    color: var(--green-bright);
+  }
+
+  .footer-final {
+    padding: 2rem 0 4rem;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.7s ease-out;
+  }
+
+  .footer-final.visible { opacity: 1; }
+
+  .footer-final a {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    font-weight: 300;
+    color: var(--text-ghost);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    transition: color 0.3s;
+  }
+
+  .footer-final a:hover { color: var(--green-bright); }
+
+  /* ─── WIDTH BAR ─── */
+
+  .width-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .width-bar-fill {
+    height: 100%;
+    background: var(--green);
+    opacity: 0.4;
+    transition: width 0.4s ease-out, background 0.8s ease;
+    width: 100%;
+  }
+
+  /* ─── ANIMATIONS ─── */
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
     to { opacity: 1; }
   }
 
-  /* === BOTTOM LABELS === */
-  .label {
-    position: absolute;
-    bottom: 3.5%;
-    text-align: center;
-    opacity: 0;
-    animation: label-fade 0.8s ease-out 2.6s forwards;
+  @keyframes drift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
   }
-  @keyframes label-fade { to { opacity: 1; } }
 
-  .label-left { left: 3%; width: 38%; }
-  .label-right { right: 3%; width: 38%; }
+  /* ─── RESPONSIVE ─── */
 
-  .label-text {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    font-weight: 300;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-  .label-left .label-text { color: rgba(186, 117, 23, 0.3); }
-  .label-right .label-text { color: rgba(45, 142, 110, 0.5); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .ego-side { animation: none; }
-    .hollow-circle, .filled-circle, .data-glow, .label, .beam, .chain-left, .chain-right {
-      animation: none !important;
-      opacity: 1 !important;
-      transform: none !important;
+  @media (max-width: 700px) {
+    .hero { padding: 0 6vw; }
+    .orbit-inner { padding: 0 6vw !important; }
+    .project {
+      grid-template-columns: 1fr !important;
+      gap: 0.2rem !important;
     }
-    .hc-1 { transform: translate(-50%, -50%) !important; }
-    .beam { transform: translateX(-50%) rotate(8deg) !important; }
+    .project-impact {
+      text-align: left !important;
+      grid-column: 1 !important;
+    }
+    .edu-row { flex-direction: column; gap: 0.15rem; }
+    .edu-detail { text-align: left; }
+    .quiet-area { padding: 0 6vw 4vh; }
   }
 </style>
 </head>
 <body>
 
-<div class="canvas">
+<canvas id="spiral-canvas"></canvas>
 
-  <div class="fulcrum"></div>
-  <div class="beam"></div>
-  <div class="chain-left"></div>
-  <div class="chain-right"></div>
+<div class="width-bar">
+  <div class="width-bar-fill" id="widthBar"></div>
+</div>
 
-  <!-- LEFT: Hollow circles — empty, drifting -->
-  <div class="ego-side">
-    <div class="ego-cluster">
-      <div class="hollow-circle hc-1"><span>ego</span></div>
-      <div class="hollow-circle hc-2"><span>assumption</span></div>
-      <div class="hollow-circle hc-3"><span>bias</span></div>
-      <div class="hollow-circle hc-4"></div>
-      <div class="hollow-circle hc-5"></div>
+<div class="content">
+
+  <!-- ─── NARRATIVE INTRO ─── -->
+  <div class="narrative">
+    <div class="narrative-label">The Story</div>
+
+    <section class="chapter">
+      <p class="chapter-text">I graduated first in my class. Best economics school in my country. <span class="bright">Every award they had to give, I won it.</span> And then something dangerous happened. I got comfortable.</p>
+    </section>
+
+    <section class="chapter chapter--compass">
+      <p class="chapter-text">Comfort is my compass. When I feel it, I move in the opposite direction.</p>
+    </section>
+
+    <section class="chapter">
+      <p class="chapter-text">I set my sights on a top ten university in the world. Two years later, I walked out of the <span class="bright">London School of Economics</span> with a degree in Financial Economics.</p>
+    </section>
+
+    <section class="chapter">
+      <p class="chapter-text">That opened the door to <span class="bright">Klarna.</span> At the time, the most valuable fintech company in Europe. Three years. Eighteen countries. Forty-nine million users. I managed enterprise accounts, developed business, optimized internal processes, and owned the data, the KPIs, and the performance analysis behind it all. <span class="bright">I learned more in those three years than in all my degrees combined.</span></p>
+    </section>
+
+    <section class="chapter">
+      <p class="chapter-text">In parallel, another master's. Because I wanted to understand business models and innovation, not just economics.</p>
+    </section>
+
+    <div class="narrative-bridge">
+      <p class="narrative-bridge-text">And then I kept building ↓</p>
     </div>
   </div>
 
-  <!-- RIGHT: Filled circles — dense, grounded, carrying real words -->
-  <div class="data-side">
-    <div class="data-glow"></div>
-    <div class="data-cluster">
-      <div class="filled-circle fc-1"><span>decisions grounded in data</span></div>
-      <div class="filled-circle fc-2"><span>probabilistic thinking</span></div>
-      <div class="filled-circle fc-3"><span>testable hypotheses</span></div>
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <p class="disorder-label">Disorder → Structure</p>
+    <h1 class="hero-statement">
+      Every system I've entered <span class="ghost">was fragmented, scattered, held together by workarounds and tribal knowledge.</span><br>
+      I compressed them into structure.
+    </h1>
+    <p class="hero-sub">Sadegh Mousavi &nbsp;·&nbsp; Germany</p>
+    <p class="scroll-prompt">Scroll to watch the spiral tighten <span class="arrow">↓</span></p>
+  </section>
+
+  <!-- ─── ORBIT 1: SYSTEMS ─── -->
+  <section class="orbit orbit--1" data-width="100">
+    <div class="orbit-inner">
+      <div class="orbit-marker">01 — Systems & Process</div>
+      <h2 class="orbit-title">I see chaos, I build <strong>systems</strong></h2>
+      <p class="orbit-body">Every organization has broken workflows held together by email and tribal knowledge. I find them and replace them with infrastructure — often before anyone asks.</p>
+      <div class="projects">
+        <div class="project">
+          <span class="project-where">Klarna<br>2024</span>
+          <span class="project-what">Merchants were submitting campaign assets through scattered channels with no standard process. I built <em>a single structured hub that replaced them all.</em></span>
+          <span class="project-impact">−11 hrs/week</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Bilfinger<br>2025</span>
+          <span class="project-what">Admin workflows were fragmented and manual. I built a <em>service catalog application from scratch</em> — architecture, design, deployment.</span>
+          <span class="project-impact">Enhanced UI/UX</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Bilfinger<br>2025–26</span>
+          <span class="project-what">A global organization with no unified process framework across its hubs. I became the official Process Modeler and architected the <em>end-to-end business process standard</em> under VP Group Finance.</span>
+          <span class="project-impact">1 standardized process</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Klarna<br>2023</span>
+          <span class="project-what">Performance reporting to merchants had no consistency — every team used a different format. I built a <em>unified dashboard</em> that got adopted company-wide.</span>
+          <span class="project-impact">Company-wide</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Klarna<br>2023–24</span>
+          <span class="project-what">Cross-team coordination ran on ad-hoc messages. I replaced it with <em>structured Jira and Trello dashboards</em> wired into Slack.</span>
+          <span class="project-impact">Replaced ad-hoc</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ORBIT 2: DATA ─── -->
+  <section class="orbit orbit--2" data-width="75">
+    <div class="orbit-inner">
+      <div class="orbit-marker">02 — Data & Analytics</div>
+      <h2 class="orbit-title">I make scattered data <strong>legible</strong></h2>
+      <p class="orbit-body">Data spread across five tools is the same as no data. I consolidate, structure, and surface what matters — then build the frameworks to keep it clear.</p>
+      <div class="projects">
+        <div class="project">
+          <span class="project-where">Klarna<br>2024</span>
+          <span class="project-what">Merchant data lived in four different tools. Nobody had a full picture. I partnered with data engineering and built <em>one unified analytics platform on Looker.</em></span>
+          <span class="project-impact">4 → 1 sources</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Bilfinger<br>2026</span>
+          <span class="project-what">Service coverage across global hubs had never been mapped. I built the <em>Existence Matrix, Penetration Matrix, and Harmonization Index</em> to make the gaps visible for the first time.</span>
+          <span class="project-impact">Gap analysis</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Bilfinger<br>2026</span>
+          <span class="project-what">Partnered with the Director of Finance Performance Management to build a <em>KPI dashboard for global finance operations</em> — defining metric selection, calculation logic, and the measurement framework together.</span>
+          <span class="project-impact">Data-driven</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Klarna<br>2021–23</span>
+          <span class="project-what">Campaigns were targeting broadly. I ran <em>A/B testing and lookalike analysis</em> to sharpen targeting across 49 million active users.</span>
+          <span class="project-impact">49M users</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Personal<br>2026</span>
+          <span class="project-what">I wanted to extract real reasoning from any source, not just summaries. Built an <em>AI pipeline that maps concepts, causal chains, and assumptions</em> into structured knowledge bases.</span>
+          <span class="project-impact">Reasoning → structure</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ORBIT 3: AUTOMATION ─── -->
+  <section class="orbit orbit--3" data-width="52">
+    <div class="orbit-inner">
+      <div class="orbit-marker">03 — Automation & AI</div>
+      <h2 class="orbit-title">I automate <strong>the repetitive</strong></h2>
+      <p class="orbit-body">If a human is doing it more than twice, a machine should do it. Early AI adopter since 2020 — trained directly by OpenAI architects.</p>
+      <div class="projects">
+        <div class="project">
+          <span class="project-where">Klarna<br>2024</span>
+          <span class="project-what">Account managers were spending 45 minutes per account pulling the same report every week. I <em>automated 80% of the manual reporting</em> with Google Apps Script.</span>
+          <span class="project-impact">−45 min/acct/wk</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Bilfinger<br>2025</span>
+          <span class="project-what">The service catalog design layout was being done manually — hours of repetitive formatting. I <em>automated the entire layout generation</em> on Power Apps.</span>
+          <span class="project-impact">Design → automated</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Personal<br>2026</span>
+          <span class="project-what">I wanted structured thinking from raw video, not just transcripts. Built an <em>end-to-end AI pipeline</em> — extraction, LLM processing, visual mind maps — all automated.</span>
+          <span class="project-impact">Full pipeline</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ORBIT 4: STRATEGY ─── -->
+  <section class="orbit orbit--4" data-width="32">
+    <div class="orbit-inner">
+      <div class="orbit-marker">04 — Strategy & Transformation</div>
+      <h2 class="orbit-title">I think in strategy, <strong>then build</strong></h2>
+      <p class="orbit-body">The execution means nothing without the right framing. I start with the architecture of the problem.</p>
+      <div class="projects">
+        <div class="project">
+          <span class="project-where">Bilfinger<br>2026</span>
+          <span class="project-what">A global industrial company trying to transform its finance and HR functions. I partnered with Directors to <em>build the transformation community from scratch</em> — co-creation, agile, change management.</span>
+          <span class="project-impact">Culture shift</span>
+        </div>
+        <div class="project">
+          <span class="project-where">BARG<br>2025</span>
+          <span class="project-what">A luxury consultancy entering the UAE market with no strategy, no CRM, no pipeline. I built <em>everything from zero</em> — brand positioning, ICP, buyer personas, prospect database, and a custom CRM on Google Cloud to run it all.</span>
+          <span class="project-impact">Client in 28 days</span>
+        </div>
+        <div class="project">
+          <span class="project-where">Klarna<br>2021–23</span>
+          <span class="project-what">IKEA, Superdrug, Walmart — enterprise merchants who needed more than reports. I <em>translated their campaign data into strategic insights</em> they could act on.</span>
+          <span class="project-impact">Enterprise accts</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONVERGENCE ─── -->
+  <section class="convergence" id="convergence">
+    <div class="convergence-dot"></div>
+    <h2 class="convergence-name">Sadegh Mousavi</h2>
+    <p class="convergence-line">Unapologetically high standards. <em>Because in every action I take and every goal I set, mediocrity is a choice I refuse to make.</em></p>
+  </section>
+
+  <!-- ─── THREE CIRCLES ─── -->
+  <div class="circles-section">
+    <div class="circles-block">
+      <p class="circles-label">Operating Range</p>
+
+      <div class="circles-visual">
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 833.57 832.52">
+  <!-- Generator: Adobe Illustrator 29.3.1, SVG Export Plug-In . SVG Version: 2.1.0 Build 151)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #72706f;
+      }
+
+      .st1 {
+        fill: none;
+        stroke: #d8d5d0;
+        stroke-miterlimit: 10;
+      }
+
+      .st2 {
+        fill: #2a4f3a;
+      }
+    </style>
+  </defs>
+  <g>
+    <rect class="st1" x="25.85" y="416.26" width="0" height="0" transform="translate(-286.77 140.2) rotate(-45)"/>
+    <circle class="st1" cx="55.96" cy="416.26" r="30.49"/>
+    <circle class="st1" cx="86.07" cy="416.26" r="60.99"/>
+    <circle class="st1" cx="116.18" cy="416.26" r="91.48"/>
+    <circle class="st1" cx="146.29" cy="416.26" r="121.98"/>
+    <circle class="st1" cx="176.4" cy="416.26" r="152.47"/>
+    <circle class="st1" cx="206.51" cy="416.26" r="182.97"/>
+    <circle class="st1" cx="236.62" cy="416.26" r="213.46"/>
+    <circle class="st1" cx="266.73" cy="416.26" r="243.96"/>
+    <circle class="st1" cx="296.84" cy="416.26" r="274.45"/>
+    <circle class="st1" cx="326.95" cy="416.26" r="304.95"/>
+    <circle class="st1" cx="357.06" cy="416.26" r="335.44"/>
+    <circle class="st1" cx="387.17" cy="416.26" r="365.94"/>
+    <circle class="st1" cx="417.28" cy="416.26" r="396.43"/>
+  </g>
+  <path class="st0" d="M416.28,813.19c-53.59,0-105.57-10.5-154.5-31.19-47.27-19.99-89.72-48.61-126.17-85.07-36.45-36.45-65.07-78.9-85.07-126.17-20.7-48.94-31.19-100.92-31.19-154.5s10.5-105.57,31.19-154.5c19.99-47.27,48.61-89.72,85.07-126.17,36.45-36.45,78.9-65.07,126.17-85.07,48.93-20.7,100.92-31.19,154.5-31.19,0,0,0,0,0,0,53.59,0,105.57,10.5,154.5,31.19,47.27,19.99,89.72,48.61,126.17,85.07s65.07,78.9,85.07,126.17c20.7,48.94,31.19,100.92,31.19,154.5s-10.5,105.57-31.19,154.5c-19.99,47.27-48.61,89.72-85.07,126.17-36.45,36.45-78.9,65.07-126.17,85.07-48.94,20.7-100.92,31.19-154.5,31.19ZM416.28,20.33c-53.45,0-105.3,10.47-154.11,31.11-47.15,19.94-89.49,48.49-125.85,84.85s-64.91,78.7-84.85,125.85c-20.65,48.81-31.11,100.66-31.11,154.11s10.47,105.3,31.11,154.11c19.94,47.15,48.49,89.49,84.85,125.85,36.36,36.36,78.7,64.91,125.85,84.85,48.81,20.65,100.66,31.11,154.11,31.11s105.3-10.47,154.11-31.11c47.15-19.94,89.49-48.49,125.85-84.85s64.91-78.7,84.85-125.85c20.65-48.81,31.11-100.66,31.11-154.12s-10.47-105.3-31.11-154.11c-19.94-47.15-48.49-89.49-84.85-125.85-36.36-36.36-78.7-64.91-125.85-84.85-48.81-20.65-100.66-31.11-154.12-31.11Z"/>
+  <path class="st0" d="M295.74,692.65c-73.83,0-143.23-28.75-195.43-80.95-52.2-52.2-80.95-121.61-80.95-195.43,0-73.83,28.75-143.23,80.95-195.44s121.61-80.95,195.43-80.95,143.23,28.75,195.44,80.95c52.2,52.2,80.95,121.61,80.95,195.43s-28.75,143.23-80.95,195.43c-52.2,52.2-121.61,80.95-195.43,80.95ZM295.74,140.87c-73.56,0-142.71,28.65-194.73,80.66S20.35,342.7,20.35,416.26c0,73.56,28.65,142.71,80.66,194.73s121.17,80.66,194.73,80.66,142.71-28.65,194.73-80.66c52.01-52.01,80.66-121.17,80.66-194.73s-28.65-142.71-80.66-194.73-121.17-80.66-194.73-80.66Z"/>
+  <path class="st0" d="M204.32,601.23c-101.99,0-184.97-82.98-184.97-184.97s82.98-184.97,184.97-184.97,184.97,82.98,184.97,184.97-82.98,184.97-184.97,184.97ZM204.32,232.29c-101.44,0-183.97,82.53-183.97,183.97s82.53,183.97,183.97,183.97,183.97-82.53,183.97-183.97-82.53-183.97-183.97-183.97Z"/>
+  <g>
+    <path class="st2" d="M155.56,423.3c.09,1.04.32,1.92.7,2.64s.86,1.31,1.46,1.77c.59.45,1.28.78,2.06.99.78.21,1.61.31,2.5.31,1.04,0,1.93-.13,2.69-.39.76-.26,1.37-.61,1.85-1.05s.83-.96,1.05-1.54c.23-.58.34-1.2.34-1.85,0-.91-.21-1.64-.62-2.2-.41-.56-.95-1.02-1.6-1.38-.66-.36-1.42-.64-2.27-.86-.85-.22-1.73-.43-2.62-.63-.9-.21-1.77-.45-2.62-.73-.85-.28-1.61-.66-2.27-1.13-.66-.47-1.19-1.09-1.6-1.83-.41-.75-.62-1.69-.62-2.84,0-.8.17-1.58.5-2.33.33-.76.83-1.43,1.49-2.01.66-.58,1.48-1.05,2.48-1.39.99-.35,2.14-.52,3.43-.52s2.47.18,3.45.55c.98.37,1.8.87,2.45,1.51.65.64,1.13,1.38,1.46,2.22.32.84.49,1.74.49,2.69h-2.11c0-.89-.16-1.65-.47-2.3-.31-.65-.74-1.18-1.28-1.59-.54-.41-1.16-.71-1.85-.91-.69-.19-1.4-.29-2.14-.29-1.12,0-2.07.16-2.84.47-.77.31-1.38.72-1.83,1.22-.45.5-.77,1.05-.94,1.65-.17.61-.21,1.21-.1,1.81.13.76.43,1.36.91,1.81.47.45,1.06.83,1.75,1.12.69.29,1.45.53,2.28.71.83.18,1.68.38,2.54.58.86.21,1.7.45,2.51.73s1.53.66,2.15,1.13,1.13,1.08,1.51,1.83c.38.75.57,1.68.57,2.8,0,2.16-.75,3.83-2.24,5.02-1.49,1.19-3.59,1.78-6.29,1.78-1.21,0-2.33-.16-3.37-.47-1.04-.31-1.93-.79-2.69-1.43s-1.34-1.43-1.77-2.37c-.42-.94-.63-2.05-.63-3.32h2.14Z"/>
+    <path class="st2" d="M180.05,430.33c-.24.04-.55.12-.94.23-.39.11-.82.16-1.3.16-.97,0-1.71-.24-2.22-.73-.51-.49-.76-1.36-.76-2.61v-12.28h-2.37v-1.62h2.37v-4.67h1.94v4.67h3.14v1.62h-3.14v11.5c0,.41.01.77.03,1.07.02.3.09.55.19.75.11.2.28.34.5.42.23.09.54.13.96.13.26,0,.52-.02.79-.06.27-.04.53-.1.79-.16v1.59Z"/>
+    <path class="st2" d="M190.88,420.48c.37-.04.8-.11,1.31-.19.51-.09.92-.21,1.25-.36.32-.15.52-.4.6-.76.08-.36.11-.69.11-.99,0-.99-.32-1.81-.96-2.45-.64-.64-1.71-.96-3.22-.96-.67,0-1.29.06-1.85.18-.56.12-1.05.32-1.47.62-.42.29-.77.68-1.04,1.17-.27.49-.45,1.1-.53,1.83h-1.98c.06-.99.29-1.84.68-2.54.39-.7.89-1.27,1.51-1.72.62-.44,1.33-.77,2.14-.97.81-.21,1.67-.31,2.58-.31.84,0,1.64.09,2.38.28.75.18,1.39.48,1.94.88.55.4.98.93,1.3,1.6.31.67.47,1.49.47,2.46v9.14c0,.76.13,1.24.4,1.44.27.21.82.16,1.64-.15v1.52c-.15.04-.37.11-.66.19s-.58.13-.86.13c-.3,0-.59-.03-.88-.1-.32-.04-.58-.15-.78-.31s-.35-.36-.47-.58c-.12-.23-.2-.48-.24-.75-.04-.27-.06-.56-.06-.86-.82.91-1.76,1.6-2.82,2.07-1.06.47-2.2.71-3.44.71-.73,0-1.44-.1-2.12-.29-.68-.2-1.28-.5-1.8-.91-.52-.41-.93-.91-1.23-1.51-.3-.59-.45-1.3-.45-2.12,0-2.85,1.95-4.54,5.86-5.05l2.69-.36ZM194.15,421.45c-.82.35-1.65.57-2.5.68s-1.69.19-2.53.26c-1.49.11-2.65.44-3.48,1-.83.56-1.25,1.42-1.25,2.56,0,.52.1.97.31,1.35.21.38.48.69.81.94s.72.43,1.17.55.89.18,1.34.18c.78,0,1.53-.1,2.27-.29.73-.2,1.39-.49,1.96-.89.57-.4,1.03-.91,1.38-1.52.35-.62.52-1.35.52-2.19v-2.62Z"/>
+    <path class="st2" d="M203.22,430.26h-1.94v-16.79h1.94v3.14h.06c.54-1.34,1.24-2.27,2.09-2.8.85-.53,1.98-.79,3.39-.79v2.11c-1.1-.02-2.01.15-2.72.52s-1.28.86-1.7,1.49c-.42.63-.71,1.37-.87,2.22-.16.85-.24,1.74-.24,2.67v8.23Z"/>
+    <path class="st2" d="M218.45,430.33c-.24.04-.55.12-.94.23-.39.11-.82.16-1.3.16-.97,0-1.71-.24-2.22-.73-.51-.49-.76-1.36-.76-2.61v-12.28h-2.37v-1.62h2.37v-4.67h1.94v4.67h3.14v1.62h-3.14v11.5c0,.41.01.77.03,1.07.02.3.09.55.19.75.11.2.28.34.5.42.23.09.54.13.96.13.26,0,.52-.02.79-.06.27-.04.53-.1.79-.16v1.59Z"/>
+    <path class="st2" d="M232.94,413.48h1.94v16.79h-1.94v-2.33c-.26.3-.55.62-.87.94-.32.32-.7.62-1.12.89-.42.27-.91.5-1.47.68-.56.18-1.21.28-1.94.28-1.12,0-2.06-.16-2.82-.47-.76-.31-1.37-.75-1.83-1.31-.46-.56-.8-1.21-1-1.96-.21-.75-.31-1.56-.31-2.45v-11.05h1.94v11.02c0,1.45.33,2.56,1,3.32.67.77,1.77,1.15,3.31,1.15.8,0,1.52-.16,2.15-.47s1.17-.75,1.6-1.31c.43-.56.77-1.23,1-2.01s.36-1.63.36-2.56v-9.14Z"/>
+    <path class="st2" d="M241.75,436.87h-1.94v-23.4h1.94v2.95h.06c.28-.54.64-1.03,1.09-1.46s.93-.79,1.46-1.07c.53-.28,1.07-.5,1.64-.65.56-.15,1.11-.23,1.65-.23,1.36,0,2.52.23,3.47.68.95.45,1.73,1.07,2.35,1.86.62.79,1.06,1.72,1.34,2.8s.42,2.24.42,3.47c0,1.17-.15,2.29-.45,3.37-.3,1.08-.76,2.03-1.38,2.83-.62.81-1.39,1.46-2.33,1.95-.94.49-2.05.73-3.32.73-1.19,0-2.33-.26-3.42-.79-1.09-.53-1.95-1.31-2.58-2.35v9.3ZM241.75,421.93c0,.95.13,1.85.39,2.71.26.85.63,1.6,1.12,2.24.49.64,1.08,1.15,1.78,1.52.7.38,1.5.57,2.38.57.99,0,1.86-.2,2.61-.6.75-.4,1.36-.94,1.83-1.64.48-.69.82-1.5,1.04-2.41.22-.92.3-1.91.26-2.96,0-1.06-.15-1.99-.44-2.8-.29-.81-.7-1.5-1.22-2.06-.52-.56-1.12-.99-1.81-1.28-.69-.29-1.45-.44-2.27-.44-.91,0-1.72.18-2.43.55-.71.37-1.31.87-1.78,1.51-.48.64-.84,1.39-1.09,2.27-.25.88-.37,1.82-.37,2.84Z"/>
+  </g>
+  <g>
+    <path class="st2" d="M423.22,423.29c.09,1.04.32,1.92.7,2.64s.86,1.31,1.46,1.77c.59.45,1.28.78,2.06.99s1.61.31,2.5.31c1.04,0,1.93-.13,2.69-.39.76-.26,1.37-.61,1.85-1.05.48-.44.83-.96,1.05-1.54.23-.58.34-1.2.34-1.85,0-.91-.21-1.64-.62-2.2-.41-.56-.95-1.02-1.6-1.38s-1.42-.64-2.27-.86c-.85-.22-1.73-.43-2.62-.63-.9-.21-1.77-.45-2.62-.73s-1.61-.66-2.27-1.13c-.66-.47-1.19-1.09-1.6-1.83-.41-.75-.62-1.69-.62-2.84,0-.8.17-1.58.5-2.33.33-.76.83-1.43,1.49-2.01.66-.58,1.49-1.05,2.48-1.39.99-.35,2.14-.52,3.43-.52s2.47.18,3.45.55c.98.37,1.8.87,2.45,1.51.65.64,1.13,1.38,1.46,2.22s.49,1.74.49,2.69h-2.11c0-.89-.16-1.65-.47-2.3-.31-.65-.74-1.18-1.28-1.59s-1.16-.71-1.85-.91c-.69-.19-1.4-.29-2.14-.29-1.12,0-2.07.16-2.84.47-.77.31-1.38.72-1.83,1.22-.45.5-.77,1.05-.94,1.65-.17.61-.21,1.21-.1,1.81.13.76.43,1.36.91,1.81.47.45,1.06.83,1.75,1.12.69.29,1.45.53,2.28.71.83.18,1.68.38,2.54.58.86.21,1.7.45,2.51.73.81.28,1.53.66,2.16,1.13.63.48,1.13,1.08,1.51,1.83.38.75.57,1.68.57,2.8,0,2.16-.75,3.83-2.24,5.02-1.49,1.19-3.59,1.78-6.29,1.78-1.21,0-2.33-.16-3.37-.47-1.04-.31-1.93-.79-2.69-1.43-.76-.64-1.34-1.43-1.77-2.37-.42-.94-.63-2.05-.63-3.32h2.14Z"/>
+    <path class="st2" d="M453.71,418.76c-.35-1.25-.94-2.23-1.78-2.93s-1.91-1.05-3.21-1.05c-.99,0-1.85.21-2.56.62-.71.41-1.3.96-1.75,1.64-.45.68-.79,1.45-1,2.3s-.32,1.71-.32,2.58.1,1.75.31,2.59c.21.84.53,1.6.99,2.27.45.67,1.04,1.2,1.75,1.6.71.4,1.58.6,2.59.6,1.45,0,2.61-.4,3.48-1.2.88-.8,1.43-1.9,1.67-3.3h2.07c-.17.93-.45,1.78-.83,2.54s-.86,1.43-1.46,1.98c-.59.55-1.3.98-2.12,1.28-.82.3-1.76.45-2.82.45-1.34,0-2.5-.23-3.47-.68-.97-.45-1.77-1.07-2.4-1.86-.63-.79-1.09-1.72-1.39-2.8s-.45-2.24-.45-3.47c0-1.17.17-2.28.5-3.35s.83-2.01,1.47-2.83c.65-.82,1.45-1.47,2.41-1.96.96-.49,2.07-.73,3.32-.73,1.94,0,3.52.46,4.71,1.39,1.2.93,1.95,2.38,2.25,4.34h-1.98Z"/>
+    <path class="st2" d="M467.55,420.48c.37-.04.8-.11,1.31-.2.51-.09.92-.21,1.25-.36.32-.15.52-.4.6-.76.08-.36.11-.69.11-.99,0-.99-.32-1.81-.96-2.45-.64-.64-1.71-.96-3.22-.96-.67,0-1.29.06-1.85.18s-1.05.32-1.47.62c-.42.29-.77.68-1.04,1.17-.27.49-.45,1.1-.53,1.83h-1.98c.06-.99.29-1.84.68-2.54.39-.7.89-1.27,1.51-1.72.62-.44,1.33-.77,2.14-.97.81-.21,1.67-.31,2.58-.31.84,0,1.64.09,2.38.28.75.18,1.39.48,1.94.88.55.4.98.93,1.3,1.6.31.67.47,1.49.47,2.46v9.14c0,.76.13,1.24.4,1.44.27.21.82.16,1.64-.15v1.52c-.15.04-.37.11-.66.19-.29.09-.58.13-.86.13-.3,0-.59-.03-.88-.1-.32-.04-.58-.15-.78-.31s-.35-.36-.47-.58c-.12-.23-.2-.48-.24-.75-.04-.27-.06-.56-.06-.86-.82.91-1.76,1.6-2.82,2.07-1.06.47-2.2.71-3.43.71-.73,0-1.44-.1-2.12-.29-.68-.19-1.28-.5-1.8-.91-.52-.41-.93-.91-1.23-1.51-.3-.59-.45-1.3-.45-2.12,0-2.85,1.95-4.54,5.86-5.05l2.69-.36ZM470.82,421.45c-.82.35-1.65.57-2.5.68-.84.11-1.69.19-2.53.26-1.49.11-2.65.44-3.48,1-.83.56-1.25,1.42-1.25,2.56,0,.52.1.97.31,1.34s.48.69.81.94c.33.25.72.43,1.17.55.44.12.89.18,1.34.18.78,0,1.53-.1,2.27-.29s1.39-.49,1.96-.89c.57-.4,1.03-.91,1.38-1.52.34-.62.52-1.34.52-2.19v-2.62Z"/>
+    <path class="st2" d="M478.14,430.26v-23.33h1.94v23.33h-1.94Z"/>
+    <path class="st2" d="M486.24,422.32c0,.91.12,1.77.36,2.58.24.81.59,1.51,1.05,2.11.46.59,1.05,1.07,1.77,1.43s1.53.53,2.46.53c1.27,0,2.37-.33,3.27-1,.91-.67,1.51-1.62,1.81-2.85h2.17c-.24.8-.55,1.54-.94,2.22-.39.68-.88,1.28-1.46,1.78-.58.51-1.28.9-2.07,1.18-.8.28-1.73.42-2.79.42-1.34,0-2.5-.23-3.47-.68-.97-.45-1.77-1.07-2.4-1.86-.63-.79-1.09-1.72-1.39-2.79-.3-1.07-.45-2.22-.45-3.45s.18-2.39.54-3.47c.36-1.08.86-2.02,1.52-2.83s1.46-1.45,2.41-1.91c.95-.46,2.03-.7,3.24-.7,2.31,0,4.12.79,5.44,2.38,1.32,1.59,1.97,3.89,1.94,6.92h-13.03ZM497.2,420.7c0-.82-.11-1.59-.34-2.32-.23-.72-.56-1.35-1-1.88-.44-.53-1-.95-1.67-1.26-.67-.31-1.44-.47-2.3-.47s-1.63.16-2.29.49c-.66.32-1.22.76-1.68,1.3-.46.54-.84,1.17-1.12,1.88-.28.71-.46,1.47-.55,2.27h10.95Z"/>
+    <path class="st2" d="M514.44,413.48h1.94v16.78h-1.94v-2.33c-.26.3-.55.62-.88.94-.32.32-.7.62-1.12.89-.42.27-.91.5-1.47.68-.56.18-1.21.28-1.94.28-1.12,0-2.06-.16-2.82-.47-.76-.31-1.37-.75-1.83-1.31s-.8-1.21-1-1.96c-.21-.75-.31-1.56-.31-2.45v-11.05h1.94v11.02c0,1.45.33,2.55,1,3.32.67.77,1.77,1.15,3.3,1.15.8,0,1.52-.16,2.16-.47.64-.31,1.17-.75,1.6-1.31.43-.56.77-1.23,1-2.01.24-.78.36-1.63.36-2.56v-9.14Z"/>
+    <path class="st2" d="M523.25,436.87h-1.94v-23.4h1.94v2.95h.06c.28-.54.64-1.03,1.09-1.46.44-.43.93-.79,1.46-1.07s1.07-.5,1.64-.65c.56-.15,1.11-.23,1.65-.23,1.36,0,2.52.23,3.47.68s1.73,1.07,2.35,1.86,1.06,1.72,1.34,2.8c.28,1.08.42,2.24.42,3.47,0,1.17-.15,2.29-.45,3.37-.3,1.08-.76,2.03-1.38,2.83-.62.81-1.39,1.46-2.33,1.94-.94.49-2.05.73-3.32.73-1.19,0-2.33-.26-3.42-.79s-1.95-1.31-2.58-2.35v9.3ZM523.25,421.93c0,.95.13,1.85.39,2.71.26.85.63,1.6,1.12,2.24.49.64,1.08,1.15,1.78,1.52.7.38,1.5.57,2.38.57.99,0,1.86-.2,2.61-.6.75-.4,1.36-.94,1.83-1.64.48-.69.82-1.5,1.04-2.41.22-.92.3-1.91.26-2.96,0-1.06-.15-1.99-.44-2.8-.29-.81-.7-1.5-1.22-2.06-.52-.56-1.12-.99-1.81-1.28-.69-.29-1.45-.44-2.27-.44-.91,0-1.72.18-2.43.55-.71.37-1.31.87-1.78,1.51-.48.64-.84,1.39-1.08,2.27-.25.88-.37,1.82-.37,2.84Z"/>
+  </g>
+  <g>
+    <path class="st2" d="M620.58,430.26v-23.33h15.52v1.88h-13.32v8.42h12.02v1.88h-12.02v9.27h13.64v1.88h-15.85Z"/>
+    <path class="st2" d="M642.03,430.26h-1.94v-16.78h1.94v2.33c.78-.82,1.58-1.49,2.41-2.01.83-.52,1.83-.78,3-.78,1.04,0,2,.18,2.88.53.88.36,1.63.98,2.24,1.86.41.6.65,1.23.73,1.86.08.64.11,1.3.11,1.99v10.98h-1.94v-10.95c0-1.51-.33-2.65-1-3.4-.67-.76-1.78-1.13-3.34-1.13-.61,0-1.16.09-1.65.28s-.95.43-1.34.73c-.4.3-.74.65-1.02,1.04-.28.39-.5.8-.65,1.23-.2.54-.31,1.06-.36,1.56-.04.5-.07,1.04-.07,1.62v9.04Z"/>
+    <path class="st2" d="M664,430.33c-.24.04-.55.12-.94.23-.39.11-.82.16-1.3.16-.97,0-1.71-.24-2.22-.73-.51-.49-.76-1.36-.76-2.61v-12.28h-2.37v-1.62h2.37v-4.67h1.94v4.67h3.14v1.62h-3.14v11.5c0,.41.01.77.03,1.07s.09.55.19.75.28.33.5.42c.23.09.54.13.96.13.26,0,.52-.02.79-.06s.54-.1.79-.16v1.59Z"/>
+    <path class="st2" d="M668.31,422.32c0,.91.12,1.77.36,2.58.24.81.59,1.51,1.05,2.11.46.59,1.05,1.07,1.77,1.43s1.53.53,2.46.53c1.27,0,2.37-.33,3.27-1,.91-.67,1.51-1.62,1.81-2.85h2.17c-.24.8-.55,1.54-.94,2.22-.39.68-.88,1.28-1.46,1.78-.58.51-1.27.9-2.07,1.18-.8.28-1.73.42-2.79.42-1.34,0-2.5-.23-3.47-.68-.97-.45-1.77-1.07-2.4-1.86-.63-.79-1.09-1.72-1.39-2.79s-.45-2.22-.45-3.45.18-2.39.53-3.47c.36-1.08.86-2.02,1.52-2.83.66-.81,1.46-1.45,2.41-1.91.95-.46,2.03-.7,3.24-.7,2.31,0,4.13.79,5.44,2.38,1.32,1.59,1.97,3.89,1.94,6.92h-13.03ZM679.27,420.7c0-.82-.11-1.59-.34-2.32-.23-.72-.56-1.35-1-1.88-.44-.53-1-.95-1.67-1.26-.67-.31-1.44-.47-2.3-.47s-1.63.16-2.28.49c-.66.32-1.22.76-1.69,1.3s-.84,1.17-1.12,1.88c-.28.71-.46,1.47-.55,2.27h10.95Z"/>
+    <path class="st2" d="M687.17,430.26h-1.94v-16.78h1.94v3.14h.06c.54-1.34,1.24-2.27,2.09-2.8.85-.53,1.98-.79,3.39-.79v2.11c-1.1-.02-2.01.15-2.72.52s-1.28.86-1.7,1.49c-.42.63-.71,1.37-.87,2.22-.16.85-.24,1.74-.24,2.67v8.23Z"/>
+    <path class="st2" d="M698.09,436.87h-1.94v-23.4h1.94v2.95h.06c.28-.54.64-1.03,1.09-1.46.44-.43.93-.79,1.46-1.07s1.07-.5,1.64-.65c.56-.15,1.11-.23,1.65-.23,1.36,0,2.52.23,3.47.68s1.73,1.07,2.35,1.86,1.06,1.72,1.34,2.8c.28,1.08.42,2.24.42,3.47,0,1.17-.15,2.29-.45,3.37-.3,1.08-.76,2.03-1.38,2.83-.62.81-1.39,1.46-2.33,1.94-.94.49-2.05.73-3.32.73-1.19,0-2.33-.26-3.42-.79s-1.95-1.31-2.58-2.35v9.3ZM698.09,421.93c0,.95.13,1.85.39,2.71.26.85.63,1.6,1.12,2.24.49.64,1.08,1.15,1.78,1.52.7.38,1.5.57,2.38.57.99,0,1.86-.2,2.61-.6.75-.4,1.36-.94,1.83-1.64.48-.69.82-1.5,1.04-2.41.22-.92.3-1.91.26-2.96,0-1.06-.15-1.99-.44-2.8-.29-.81-.7-1.5-1.22-2.06-.52-.56-1.12-.99-1.81-1.28-.69-.29-1.45-.44-2.27-.44-.91,0-1.72.18-2.43.55-.71.37-1.31.87-1.78,1.51-.48.64-.84,1.39-1.08,2.27-.25.88-.37,1.82-.37,2.84Z"/>
+    <path class="st2" d="M717.76,430.26h-1.94v-16.78h1.94v3.14h.07c.54-1.34,1.24-2.27,2.09-2.8.85-.53,1.98-.79,3.39-.79v2.11c-1.1-.02-2.01.15-2.72.52s-1.28.86-1.7,1.49c-.42.63-.71,1.37-.88,2.22s-.24,1.74-.24,2.67v8.23Z"/>
+    <path class="st2" d="M726.12,409.82v-2.88h2.14v2.88h-2.14ZM726.22,430.26v-16.78h1.94v16.78h-1.94Z"/>
+    <path class="st2" d="M734.25,425.01c.3,1.45.85,2.47,1.64,3.06.79.59,1.92.89,3.39.89.71,0,1.33-.09,1.85-.26.52-.17.94-.41,1.28-.7.33-.29.59-.62.76-.99.17-.37.26-.76.26-1.17,0-.82-.26-1.43-.79-1.83s-1.19-.71-1.99-.94c-.8-.23-1.66-.42-2.59-.58s-1.79-.4-2.59-.73c-.8-.32-1.46-.79-1.99-1.39-.53-.6-.79-1.46-.79-2.56,0-1.4.51-2.55,1.54-3.45,1.03-.9,2.48-1.34,4.36-1.34s3.29.41,4.42,1.22c1.13.81,1.82,2.17,2.06,4.07h-1.98c-.17-1.3-.66-2.21-1.47-2.74-.81-.53-1.83-.79-3.06-.79s-2.17.26-2.82.79c-.65.53-.97,1.23-.97,2.09,0,.76.26,1.33.79,1.73.53.4,1.19.72,1.99.97.8.25,1.66.47,2.59.67s1.79.47,2.59.83c.8.36,1.46.84,1.99,1.44.53.61.79,1.45.79,2.53,0,.8-.17,1.51-.52,2.12-.35.62-.82,1.13-1.43,1.54s-1.32.72-2.15.92c-.83.21-1.75.31-2.74.31s-1.88-.15-2.64-.44c-.77-.29-1.42-.7-1.96-1.21-.54-.52-.96-1.12-1.26-1.82-.3-.69-.48-1.44-.52-2.24h1.98Z"/>
+    <path class="st2" d="M750.52,422.32c0,.91.12,1.77.36,2.58.24.81.59,1.51,1.05,2.11.46.59,1.05,1.07,1.77,1.43s1.53.53,2.46.53c1.27,0,2.37-.33,3.27-1,.91-.67,1.51-1.62,1.81-2.85h2.17c-.24.8-.55,1.54-.94,2.22-.39.68-.88,1.28-1.46,1.78-.58.51-1.28.9-2.07,1.18-.8.28-1.73.42-2.79.42-1.34,0-2.5-.23-3.47-.68-.97-.45-1.77-1.07-2.4-1.86-.63-.79-1.09-1.72-1.39-2.79-.3-1.07-.45-2.22-.45-3.45s.18-2.39.54-3.47c.36-1.08.86-2.02,1.52-2.83s1.46-1.45,2.41-1.91c.95-.46,2.03-.7,3.24-.7,2.31,0,4.12.79,5.44,2.38,1.32,1.59,1.97,3.89,1.94,6.92h-13.03ZM761.47,420.7c0-.82-.11-1.59-.34-2.32-.23-.72-.56-1.35-1-1.88-.44-.53-1-.95-1.67-1.26-.67-.31-1.44-.47-2.3-.47s-1.63.16-2.29.49c-.66.32-1.22.76-1.68,1.3-.46.54-.84,1.17-1.12,1.88-.28.71-.46,1.47-.55,2.27h10.95Z"/>
+  </g>
+</svg>      </div>
+
+      <p class="circles-text">Most professionals know one context. I've built inside three — from a startup with no infrastructure, to a scale-up serving 49 million users, to a global industrial enterprise where change moves through layers of hierarchy. <span class="bright">Each demanded a fundamentally different approach: different speed, different stakeholders, different definition of "done."</span> That range isn't common. It means I don't bring a one-size-fits-all playbook. I bring the instinct to read the room and adapt the approach to where the organization actually is.</p>
     </div>
   </div>
 
-  <!-- Labels -->
-  <div class="label label-left">
-    <span class="label-text">volume without substance</span>
+  <!-- ─── POST-CONVERGENCE ─── -->
+  <div class="duality">
+    <!-- Beliefs -->
+    <div class="beliefs-block">
+      <p class="beliefs-label">How I Think</p>
+
+      <p class="duality-text">I am humble and I make decisions grounded in data, probabilistic thinking, and testable hypotheses. <span class="bright">Not ego, not overconfidence, not unfounded assumptions.</span></p>
+    </div>
   </div>
-  <div class="label label-right">
-    <span class="label-text">weight of evidence</span>
+
+  <!-- ─── QUIET ─── -->
+  <div class="quiet-area">
+    <div class="quiet-block">
+      <p class="quiet-label">Education</p>
+      <div class="edu-row">
+        <span class="edu-name">London School of Economics</span>
+        <span class="edu-detail">MSc Financial Economics · ML & Big Data</span>
+      </div>
+      <div class="edu-row">
+        <span class="edu-name">University of Mannheim</span>
+        <span class="edu-detail">MSc Economics</span>
+      </div>
+      <div class="edu-row">
+        <span class="edu-name">Shiraz University</span>
+        <span class="edu-detail">BA Economics · <span class="green">Ranked 1st</span> · Student of the Year</span>
+      </div>
+    </div>
+
+    <div class="quiet-block">
+      <p class="quiet-label">Recognition</p>
+      <div class="edu-row">
+        <span class="edu-name">Ranked 1st in Class of 2018</span>
+        <span class="edu-detail">Shiraz University</span>
+      </div>
+      <div class="edu-row">
+        <span class="edu-name">Mannheim Opportunity Scholarship</span>
+        <span class="edu-detail">2022–2024</span>
+      </div>
+      <div class="edu-row">
+        <span class="edu-name">HSE/LSE Tuition Fee Waiver</span>
+        <span class="edu-detail">2019</span>
+      </div>
+      <div class="edu-row">
+        <span class="edu-name">Student of the Year Award</span>
+        <span class="edu-detail">Alumni Association, Shiraz University · 2018</span>
+      </div>
+      <div class="edu-row">
+        <span class="edu-name">Creative Scientific Activities Award</span>
+        <span class="edu-detail">Shiraz University · 2018</span>
+      </div>
+    </div>
+
+    <div class="footer-final">
+      <a href="/">← Home</a>
+      <a href="mailto:itssadeq@gmail.com">itssadeq@gmail.com</a>
+    </div>
   </div>
 
 </div>
+
+<script>
+// ─── SPIRAL CANVAS ───
+const canvas = document.getElementById('spiral-canvas');
+const ctx = canvas.getContext('2d');
+let scrollProgress = 0;
+let isInverted = false;
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Get convergence element position for spiral target
+function getConvergenceCenter() {
+  const el = document.getElementById('convergence');
+  if (!el) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  const rect = el.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height * 0.35
+  };
+}
+
+function drawSpiral(progress, fadeAlpha) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const cx = w / 2;
+  const cy = h / 2;
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.globalAlpha = fadeAlpha !== undefined ? fadeAlpha : 1;
+
+  const maxRadius = Math.max(w, h) * 0.5;
+  const turns = 5;
+  const totalAngle = turns * Math.PI * 2;
+  const points = 800;
+
+  // Determine colors based on inversion state
+  const green = isInverted ? 'rgba(26, 80, 56,' : 'rgba(58, 138, 101,';
+
+  // Inward spiral — synced exactly to convergence position
+  const inwardComplete = progress;
+
+  ctx.beginPath();
+  for (let i = 0; i <= points * inwardComplete; i++) {
+    const t = i / points;
+    const angle = t * totalAngle;
+    const radius = maxRadius * Math.pow(1 - t, 1.4);
+
+    const x = cx + Math.cos(angle) * radius;
+    const y = cy + Math.sin(angle) * radius;
+
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius);
+  grad.addColorStop(0, green + '0.7)');
+  grad.addColorStop(0.15, green + '0.5)');
+  grad.addColorStop(0.4, green + '0.3)');
+  grad.addColorStop(1, green + '0.08)');
+
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 1.8;
+  ctx.stroke();
+
+  // Echo spiral (thinner)
+  if (inwardComplete > 0.1) {
+    ctx.beginPath();
+    for (let i = 0; i <= points * inwardComplete * 0.9; i++) {
+      const t = i / points;
+      const angle = t * totalAngle + 0.3;
+      const radius = maxRadius * Math.pow(1 - t, 1.4) * 0.92;
+
+      const x = cx + Math.cos(angle) * radius;
+      const y = cy + Math.sin(angle) * radius;
+
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = green + '0.06)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+
+  // Inward tip dot
+  if (inwardComplete > 0.05) {
+    const endT = inwardComplete;
+    const endAngle = endT * totalAngle;
+    const endRadius = maxRadius * Math.pow(1 - endT, 1.4);
+    const endX = cx + Math.cos(endAngle) * endRadius;
+    const endY = cy + Math.sin(endAngle) * endRadius;
+
+    ctx.beginPath();
+    ctx.arc(endX, endY, 3, 0, Math.PI * 2);
+    ctx.fillStyle = green + (0.4 + inwardComplete * 0.5).toFixed(2) + ')';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(endX, endY, 12, 0, Math.PI * 2);
+    ctx.fillStyle = green + '0.08)';
+    ctx.fill();
+  }
+
+  // Center glow (grows as spiral nears center)
+  if (progress > 0.85) {
+    const intensity = Math.min(1, (progress - 0.85) / 0.15);
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4 + intensity * 8, 0, Math.PI * 2);
+    ctx.fillStyle = green + (intensity * 0.4).toFixed(2) + ')';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 25 + intensity * 35, 0, Math.PI * 2);
+    ctx.fillStyle = green + (intensity * 0.06).toFixed(2) + ')';
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ─── SCROLL ───
+const widthBar = document.getElementById('widthBar');
+const convergence = document.getElementById('convergence');
+let spiralProgress = 0; // 0 = nothing drawn, 1 = fully tightened to center
+
+function onScroll() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const overallProgress = Math.min(1, scrollTop / docHeight);
+
+  // Calculate spiral progress based on convergence element position
+  // Spiral should be 0 at page top and exactly 1 when convergence center hits viewport center
+  const convRect = convergence.getBoundingClientRect();
+  const convCenter = convRect.top + convRect.height * 0.35;
+  const viewCenter = window.innerHeight * 0.5;
+
+  // Calculate spiral progress based on hero and convergence positions
+  // Spiral should be 0 when hero section enters viewport, 1 when convergence hits center
+  const heroEl = document.querySelector('.hero');
+  const heroTop = heroEl ? heroEl.offsetTop : 0;
+  const heroTrigger = Math.max(0, heroTop - window.innerHeight);
+
+  const convOffsetTop = convergence.offsetTop + convergence.offsetHeight * 0.35;
+  const triggerScroll = convOffsetTop - viewCenter;
+
+  if (triggerScroll > heroTrigger) {
+    const spiralRange = triggerScroll - heroTrigger;
+    const spiralScroll = Math.max(0, scrollTop - heroTrigger);
+    spiralProgress = Math.min(1, spiralScroll / spiralRange);
+  } else {
+    spiralProgress = 1;
+  }
+
+  // Calculate spiral fade — after convergence, gradually decrease opacity
+  var spiralFade = 1;
+  if (isInverted) {
+    const pastConvergence = scrollTop - triggerScroll;
+    const fadeRange = window.innerHeight * 0.7;
+    spiralFade = Math.max(0, 1 - pastConvergence / fadeRange);
+  }
+  drawSpiral(spiralProgress, spiralFade);
+
+  // Width bar tightens
+  const barWidth = 100 - (overallProgress * 88);
+  widthBar.style.width = barWidth + '%';
+
+  // Trigger inversion exactly when spiral completes
+  if (convCenter <= viewCenter && convCenter > -convRect.height * 0.5) {
+    if (!isInverted) {
+      isInverted = true;
+      document.body.classList.add('inverted');
+      convergence.classList.add('reached');
+    }
+  } else if (convCenter > viewCenter + 80) {
+    if (isInverted) {
+      isInverted = false;
+      document.body.classList.remove('inverted');
+      convergence.classList.remove('reached');
+    }
+  }
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+drawSpiral(0, 1);
+
+// ─── OBSERVERS ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.chapter, .narrative-bridge, .orbit, .circles-block, .duality-block, .beliefs-block, .quiet-block, .footer-final').forEach(el => {
+  observer.observe(el);
+});
+
+</script>
 
 </body>
 </html>
