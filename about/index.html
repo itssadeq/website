@@ -3,920 +3,352 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sadegh Mousavi</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<title>The Weight Test</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0b0d;
-    --text: #d0ccc4;
-    --text-bright: #eae6dc;
-    --text-dim: #6a665c;
-    --text-ghost: #2e2c28;
-    --green: #2d6b4f;
-    --green-bright: #3a8a65;
-    --green-glow: rgba(45, 107, 79, 0.15);
-    --serif: 'Cormorant', Georgia, serif;
-    --sans: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', sans-serif;
-    --mono: 'DM Mono', monospace;
-  }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  ::selection {
-    background: var(--green);
-    color: var(--bg);
+  
+  :root {
+    --bg: #0C0B0A;
+    --fg: #E8E4DC;
+    --muted: #6B665C;
+    --accent: #2D8E6E;
+    --accent-light: #3DB88E;
+    --warm: #BA7517;
   }
-
-  html { scroll-behavior: auto; }
 
   body {
     background: var(--bg);
-    color: var(--text);
-    font-family: var(--serif);
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-    transition: background 0.8s ease, color 0.8s ease;
-  }
-
-  body.inverted {
-    --bg: #eae6dc;
-    --text: #2a2820;
-    --text-bright: #0a0b0d;
-    --text-dim: #6a665c;
-    --text-ghost: #c8c4ba;
-    --green: #1a5038;
-    --green-bright: #2d6b4f;
-    --green-glow: rgba(45, 107, 79, 0.1);
-    background: var(--bg);
-    color: var(--text);
-  }
-
-  /* ─── SPIRAL CANVAS ─── */
-
-  #spiral-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  /* ─── CONTENT ─── */
-
-  .content {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ─── HERO ─── */
-
-  .hero {
+    color: var(--fg);
+    font-family: 'EB Garamond', serif;
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 8vw;
-    position: relative;
-  }
-
-  .disorder-label {
-    font-family: var(--mono);
-    font-size: 0.5rem;
-    font-weight: 300;
-    color: var(--green);
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeIn 1s ease-out 0.5s forwards;
-  }
-
-  .hero-statement {
-    font-family: var(--serif);
-    font-size: clamp(2.2rem, 5.5vw, 4.2rem);
-    font-weight: 300;
-    color: var(--text-bright);
-    letter-spacing: -0.025em;
-    line-height: 1.15;
-    max-width: 720px;
-    opacity: 0;
-    animation: fadeUp 1.2s ease-out 0.8s forwards;
-    transition: color 0.8s ease;
-  }
-
-  .hero-statement .ghost {
-    color: var(--text-dim);
-    transition: color 0.8s ease;
-  }
-
-  .hero-sub {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    font-weight: 300;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-    margin-top: 2.5rem;
-    opacity: 0;
-    animation: fadeUp 1s ease-out 1.3s forwards;
-    transition: color 0.8s ease;
-  }
-
-  .scroll-prompt {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 8vw;
-    font-family: var(--mono);
-    font-size: 0.48rem;
-    font-weight: 300;
-    color: var(--text-ghost);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    opacity: 0;
-    animation: fadeIn 1s ease-out 2s forwards;
-    transition: color 0.8s ease;
-  }
-
-  .scroll-prompt .arrow {
-    display: inline-block;
-    animation: drift 2s ease-in-out infinite;
-    margin-left: 0.4rem;
-  }
-
-  /* ─── ORBIT SECTIONS ─── */
-
-  .orbit {
-    padding: 10vh 0;
-    position: relative;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.7s ease-out, transform 0.7s ease-out, color 0.8s ease;
-  }
-
-  .orbit.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .orbit-inner {
-    margin: 0 auto;
-    position: relative;
-  }
-
-  /* Progressive tightening */
-  .orbit--1 .orbit-inner { max-width: 1060px; padding: 0 3vw; }
-  .orbit--2 .orbit-inner { max-width: 860px; padding: 0 3vw; }
-  .orbit--3 .orbit-inner { max-width: 680px; padding: 0 3vw; }
-  .orbit--4 .orbit-inner { max-width: 520px; padding: 0 3vw; }
-
-  .orbit-marker {
-    font-family: var(--mono);
-    font-size: 0.48rem;
-    font-weight: 300;
-    color: var(--green);
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: color 0.8s ease;
-  }
-
-  .orbit-marker::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--text-ghost);
-    transition: background 0.8s ease;
-  }
-
-  .orbit-title {
-    font-family: var(--serif);
-    font-size: clamp(1.5rem, 2.8vw, 2.3rem);
-    font-weight: 300;
-    color: var(--text-bright);
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-    margin-bottom: 0.8rem;
-    transition: color 0.8s ease;
-  }
-
-  .orbit-title strong {
-    color: var(--green);
-    font-weight: 400;
-    transition: color 0.8s ease;
-  }
-
-  .orbit-body {
-    font-family: var(--sans);
-    font-size: 0.82rem;
-    font-weight: 400;
-    line-height: 1.7;
-    color: var(--text-dim);
-    margin-bottom: 2.5rem;
-    max-width: 460px;
-    transition: color 0.8s ease;
-  }
-
-  /* ─── PROJECTS ─── */
-
-  .projects {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .project {
-    padding: 1.2rem 0;
-    border-top: 1px solid var(--text-ghost);
-    display: grid;
-    grid-template-columns: 100px 1fr auto;
-    gap: 1rem;
-    align-items: baseline;
-    transition: background 0.3s, border-color 0.8s ease;
-    cursor: default;
-  }
-
-  .project:last-child {
-    border-bottom: 1px solid var(--text-ghost);
-  }
-
-  .project:hover {
-    background: var(--green-glow);
-  }
-
-  .project-where {
-    font-family: var(--mono);
-    font-size: 0.5rem;
-    font-weight: 300;
-    color: var(--text-ghost);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    line-height: 1.6;
-    transition: color 0.8s ease;
-  }
-
-  .project-what {
-    font-family: var(--sans);
-    font-size: 0.82rem;
-    line-height: 1.55;
-    color: var(--text);
-    transition: color 0.8s ease;
-  }
-
-  .project-what em {
-    color: var(--text-bright);
-    font-style: normal;
-    transition: color 0.8s ease;
-  }
-
-  .project-impact {
-    font-family: var(--mono);
-    font-size: 0.52rem;
-    font-weight: 400;
-    color: var(--green-bright);
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    text-align: right;
-    transition: color 0.8s ease;
-  }
-
-  .orbit--3 .project,
-  .orbit--4 .project {
-    grid-template-columns: 85px 1fr;
-    gap: 0.8rem;
-  }
-
-  .orbit--3 .project-impact,
-  .orbit--4 .project-impact {
-    grid-column: 2;
-    text-align: left;
-    margin-top: -0.3rem;
-  }
-
-  /* ─── CONVERGENCE ─── */
-
-  .convergence {
-    min-height: 80vh;
-    display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 0 2rem;
+    overflow: hidden;
+  }
+
+  .canvas {
     position: relative;
-  }
-
-  .convergence-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--green-bright);
-    margin-bottom: 2.5rem;
-    opacity: 0;
-    transition: opacity 0.6s ease-out, background 0.8s ease, box-shadow 0.8s ease;
-    box-shadow:
-      0 0 12px rgba(58, 138, 101, 0.4),
-      0 0 30px rgba(58, 138, 101, 0.2),
-      0 0 60px rgba(58, 138, 101, 0.1);
-  }
-
-  .convergence.reached .convergence-dot {
-    opacity: 1;
-  }
-
-  .convergence-name {
-    font-family: var(--serif);
-    font-size: clamp(2.5rem, 5.5vw, 4rem);
-    font-weight: 300;
-    color: var(--text-bright);
-    letter-spacing: -0.03em;
-    line-height: 1.05;
-    opacity: 0;
-    transition: opacity 0.8s ease-out, color 0.8s ease;
-  }
-
-  .convergence.reached .convergence-name {
-    opacity: 1;
-  }
-
-  .convergence-line {
-    font-family: var(--serif);
-    font-size: clamp(1.5rem, 3vw, 2.2rem);
-    font-weight: 300;
-    font-style: italic;
-    color: var(--text);
-    max-width: 580px;
-    letter-spacing: -0.02em;
-    line-height: 1.35;
-    margin-top: 2rem;
-    opacity: 0;
-    transition: opacity 0.8s ease-out 0.3s, color 0.8s ease;
-  }
-
-  .convergence-line em {
-    color: var(--green);
-    font-style: italic;
-    transition: color 0.8s ease;
-  }
-
-  .convergence.reached .convergence-line {
-    opacity: 1;
-  }
-
-  /* ─── QUIET SECTIONS ─── */
-
-  .quiet-area {
-    max-width: 520px;
-    margin: 0 auto;
-    padding: 0 2rem 5vh;
-  }
-
-  .quiet-block {
-    padding: 3rem 0;
-    border-top: 1px solid var(--text-ghost);
-    opacity: 0;
-    transition: opacity 0.7s ease-out, border-color 0.8s ease;
-  }
-
-  .quiet-block.visible { opacity: 1; }
-
-  .quiet-label {
-    font-family: var(--mono);
-    font-size: 0.45rem;
-    font-weight: 300;
-    color: var(--green);
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    transition: color 0.8s ease;
-  }
-
-  .edu-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 0.45rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.02);
-    transition: border-color 0.8s ease;
-  }
-
-  body.inverted .edu-row {
-    border-bottom-color: rgba(0,0,0,0.04);
-  }
-
-  .edu-row:last-child { border-bottom: none; }
-
-  .edu-name {
-    font-family: var(--sans);
-    font-size: 0.85rem;
-    font-weight: 400;
-    color: var(--text);
-    transition: color 0.8s ease;
-  }
-
-  .edu-detail {
-    font-family: var(--mono);
-    font-size: 0.5rem;
-    font-weight: 300;
-    color: var(--text-dim);
-    text-align: right;
-    transition: color 0.8s ease;
-  }
-
-  .edu-detail .green { color: var(--green-bright); transition: color 0.8s ease; }
-
-  .tools-text {
-    font-family: var(--mono);
-    font-size: 0.5rem;
-    font-weight: 300;
-    color: var(--text-ghost);
-    line-height: 2.2;
-    transition: color 0.8s ease;
-  }
-
-  .tools-text span {
-    transition: color 0.2s;
-    cursor: default;
-  }
-
-  .tools-text span:hover {
-    color: var(--green-bright);
-  }
-
-  .footer-final {
-    padding: 2rem 0 4rem;
-    text-align: center;
-    opacity: 0;
-    transition: opacity 0.7s ease-out;
-  }
-
-  .footer-final.visible { opacity: 1; }
-
-  .footer-final a {
-    font-family: var(--mono);
-    font-size: 0.55rem;
-    font-weight: 300;
-    color: var(--text-ghost);
-    text-decoration: none;
-    letter-spacing: 0.1em;
-    transition: color 0.3s;
-  }
-
-  .footer-final a:hover { color: var(--green-bright); }
-
-  /* ─── WIDTH BAR ─── */
-
-  .width-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    z-index: 50;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
-  }
-
-  .width-bar-fill {
-    height: 100%;
-    background: var(--green);
-    opacity: 0.4;
-    transition: width 0.4s ease-out, background 0.8s ease;
     width: 100%;
+    max-width: 920px;
+    aspect-ratio: 16 / 10;
+    margin: 0 auto;
   }
 
-  /* ─── ANIMATIONS ─── */
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
+  /* === FULCRUM === */
+  .fulcrum {
+    position: absolute;
+    bottom: 14%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-bottom: 26px solid var(--muted);
+    opacity: 0.35;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
+  /* === BEAM — RIGHT sinks, LEFT floats === */
+  .beam {
+    position: absolute;
+    bottom: calc(14% + 26px);
+    left: 50%;
+    width: 76%;
+    height: 2px;
+    background: var(--muted);
+    transform-origin: center center;
+    opacity: 0.45;
+    animation: beam-settle 2.2s ease-out forwards;
+  }
+
+  @keyframes beam-settle {
+    0%   { transform: translateX(-50%) rotate(0deg); }
+    40%  { transform: translateX(-50%) rotate(9deg); }
+    70%  { transform: translateX(-50%) rotate(7deg); }
+    100% { transform: translateX(-50%) rotate(8deg); }
+  }
+
+  /* === CHAINS === */
+  .chain {
+    position: absolute;
+    width: 1px;
+    background: repeating-linear-gradient(
+      to bottom, var(--muted) 0px, var(--muted) 3px, transparent 3px, transparent 6px
+    );
+    opacity: 0.25;
+  }
+
+  .chain-left {
+    left: 19.5%;
+    bottom: calc(14% + 26px + 28px);
+    height: 70px;
+    animation: chain-grow 2.2s ease-out forwards;
+  }
+  @keyframes chain-grow { 0% { height: 40px; } 100% { height: 70px; } }
+
+  .chain-right {
+    right: 19.5%;
+    bottom: calc(14% + 26px - 28px);
+    height: 16px;
+    animation: chain-shrink 2.2s ease-out forwards;
+  }
+  @keyframes chain-shrink { 0% { height: 40px; } 100% { height: 16px; } }
+
+  /* === LEFT: HOLLOW CIRCLES — empty, floating === */
+  .ego-side {
+    position: absolute;
+    left: 3%;
+    top: 4%;
+    width: 38%;
+    height: 55%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: float-drift 5s ease-in-out infinite;
+  }
+
+  @keyframes float-drift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+  }
+
+  .ego-cluster {
+    position: relative;
+    width: 280px;
+    height: 280px;
+  }
+
+  .hollow-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 0.5px solid rgba(186, 117, 23, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: bubble-in 1.6s ease-out forwards;
+  }
+
+  @keyframes bubble-in {
+    0% { opacity: 0; transform: scale(0.2); }
+    60% { opacity: 1; transform: scale(1.04); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  .hollow-circle span {
+    font-style: italic;
+    color: var(--warm);
+    letter-spacing: 0.06em;
+  }
+
+  .hc-1 {
+    width: 180px; height: 180px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) !important;
+    animation-delay: 0.2s;
+  }
+  .hc-1::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(186, 117, 23, 0.04), transparent 70%);
+  }
+  .hc-1 span { font-size: 24px; opacity: 0.2; }
+
+  .hc-2 {
+    width: 90px; height: 90px;
+    top: 2%; right: 8%;
+    animation-delay: 0.5s;
+  }
+  .hc-2 span { font-size: 10px; opacity: 0.15; }
+
+  .hc-3 {
+    width: 65px; height: 65px;
+    bottom: 8%; left: 2%;
+    animation-delay: 0.8s;
+  }
+  .hc-3 span { font-size: 9px; opacity: 0.14; }
+
+  .hc-4 {
+    width: 42px; height: 42px;
+    top: 0%; left: 22%;
+    animation-delay: 1s;
+  }
+
+  .hc-5 {
+    width: 30px; height: 30px;
+    bottom: 20%; right: 5%;
+    animation-delay: 1.2s;
+  }
+
+  /* === RIGHT: FILLED CIRCLES — dense, grounded === */
+  .data-side {
+    position: absolute;
+    right: 3%;
+    bottom: 16%;
+    width: 38%;
+    height: 55%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .data-cluster {
+    position: relative;
+    width: 280px;
+    height: 260px;
+  }
+
+  .filled-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(45, 142, 110, 0.12);
+    border: 0.5px solid rgba(61, 184, 142, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .filled-circle span {
+    font-family: 'DM Mono', monospace;
+    font-weight: 400;
+    color: var(--accent-light);
+    letter-spacing: 0.03em;
+    line-height: 1.35;
+    padding: 15%;
+  }
+
+  @keyframes circle-land {
+    0% { opacity: 0; transform: translateY(14px) scale(0.9); }
+    65% { opacity: 1; transform: translateY(-2px) scale(1.02); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .fc-1 {
+    width: 190px; height: 190px;
+    top: 5%; left: 50%;
+    transform: translateX(-50%);
+    animation: circle-land 0.8s ease-out 1.1s forwards;
+    background: rgba(45, 142, 110, 0.1);
+    box-shadow: 0 0 40px rgba(45, 142, 110, 0.06);
+  }
+  .fc-1 span { font-size: 12.5px; }
+
+  .fc-2 {
+    width: 150px; height: 150px;
+    bottom: 8%; left: 5%;
+    animation: circle-land 0.8s ease-out 1.4s forwards;
+    background: rgba(45, 142, 110, 0.09);
+    box-shadow: 0 0 30px rgba(45, 142, 110, 0.05);
+  }
+  .fc-2 span { font-size: 11.5px; }
+
+  .fc-3 {
+    width: 130px; height: 130px;
+    bottom: 2%; right: 8%;
+    animation: circle-land 0.8s ease-out 1.7s forwards;
+    background: rgba(45, 142, 110, 0.08);
+    box-shadow: 0 0 25px rgba(45, 142, 110, 0.04);
+  }
+  .fc-3 span { font-size: 11px; }
+
+  /* Subtle glow behind entire data cluster */
+  .data-glow {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(45, 142, 110, 0.06), transparent 70%);
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: glow-in 1.5s ease-out 2.2s forwards;
+  }
+  @keyframes glow-in {
     to { opacity: 1; }
   }
 
-  @keyframes drift {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(5px); }
+  /* === BOTTOM LABELS === */
+  .label {
+    position: absolute;
+    bottom: 3.5%;
+    text-align: center;
+    opacity: 0;
+    animation: label-fade 0.8s ease-out 2.6s forwards;
   }
+  @keyframes label-fade { to { opacity: 1; } }
 
-  /* ─── RESPONSIVE ─── */
+  .label-left { left: 3%; width: 38%; }
+  .label-right { right: 3%; width: 38%; }
 
-  @media (max-width: 700px) {
-    .hero { padding: 0 6vw; }
-    .orbit-inner { padding: 0 6vw !important; }
-    .project {
-      grid-template-columns: 1fr !important;
-      gap: 0.2rem !important;
+  .label-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .label-left .label-text { color: rgba(186, 117, 23, 0.3); }
+  .label-right .label-text { color: rgba(45, 142, 110, 0.5); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ego-side { animation: none; }
+    .hollow-circle, .filled-circle, .data-glow, .label, .beam, .chain-left, .chain-right {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
     }
-    .project-impact {
-      text-align: left !important;
-      grid-column: 1 !important;
-    }
-    .edu-row { flex-direction: column; gap: 0.15rem; }
-    .edu-detail { text-align: left; }
-    .quiet-area { padding: 0 6vw 4vh; }
+    .hc-1 { transform: translate(-50%, -50%) !important; }
+    .beam { transform: translateX(-50%) rotate(8deg) !important; }
   }
 </style>
 </head>
 <body>
 
-<canvas id="spiral-canvas"></canvas>
+<div class="canvas">
 
-<div class="width-bar">
-  <div class="width-bar-fill" id="widthBar"></div>
-</div>
+  <div class="fulcrum"></div>
+  <div class="beam"></div>
+  <div class="chain-left"></div>
+  <div class="chain-right"></div>
 
-<div class="content">
-
-  <!-- ─── HERO ─── -->
-  <section class="hero">
-    <p class="disorder-label">Disorder → Structure</p>
-    <h1 class="hero-statement">
-      Every system I've entered <span class="ghost">was fragmented, scattered, held together by workarounds and tribal knowledge.</span><br>
-      I compressed them into structure.
-    </h1>
-    <p class="hero-sub">Sadegh Mousavi &nbsp;·&nbsp; Germany</p>
-    <p class="scroll-prompt">Scroll to watch the spiral tighten <span class="arrow">↓</span></p>
-  </section>
-
-  <!-- ─── ORBIT 1: SYSTEMS ─── -->
-  <section class="orbit orbit--1" data-width="100">
-    <div class="orbit-inner">
-      <div class="orbit-marker">01 — Systems & Process</div>
-      <h2 class="orbit-title">I see chaos, I build <strong>systems</strong></h2>
-      <p class="orbit-body">Every organization has broken workflows held together by email and tribal knowledge. I find them and replace them with infrastructure — often before anyone asks.</p>
-      <div class="projects">
-        <div class="project">
-          <span class="project-where">Klarna<br>2024</span>
-          <span class="project-what">Led centralized merchant onboarding hub — standardized campaign asset submissions and <em>automated campaign setup</em>, replacing fragmented cross-channel process</span>
-          <span class="project-impact">−11 hrs/week</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Bilfinger<br>2025</span>
-          <span class="project-what">Own end-to-end service catalog on Power Apps — architecture, workflow design, deployment. <em>Eliminated fragmented admin workflows</em></span>
-          <span class="project-impact">Full ownership</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Bilfinger<br>2025–26</span>
-          <span class="project-what">Official Process Modeler for global BtR standardization under VP Group Finance — <em>BPMN 2.0 end-to-end framework across 7 hubs</em></span>
-          <span class="project-impact">7 global hubs</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Klarna<br>2023</span>
-          <span class="project-what">Standardized performance reporting deck across Merchant Success — unified templates <em>adopted company-wide</em></span>
-          <span class="project-impact">Company-wide</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Klarna<br>2023–24</span>
-          <span class="project-what">Ticket-based Jira and Trello dashboards integrated with Slack — <em>streamlined cross-team coordination</em></span>
-          <span class="project-impact">Replaced ad-hoc</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── ORBIT 2: DATA ─── -->
-  <section class="orbit orbit--2" data-width="75">
-    <div class="orbit-inner">
-      <div class="orbit-marker">02 — Data & Analytics</div>
-      <h2 class="orbit-title">I make scattered data <strong>legible</strong></h2>
-      <p class="orbit-body">Data spread across five tools is the same as no data. I consolidate, structure, and surface what matters — then build the frameworks to keep it clear.</p>
-      <div class="projects">
-        <div class="project">
-          <span class="project-where">Klarna<br>2024</span>
-          <span class="project-what">Partnered with data engineering to consolidate Stocard, Mixpanel, Drive-to-Store, and Klarna lakehouse into <em>unified merchant analytics on Looker</em></span>
-          <span class="project-impact">4 → 1 sources</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Bilfinger<br>2026</span>
-          <span class="project-what">White spot analysis across 7 hubs — built Existence Matrix, Penetration Matrix, Harmonization Index, and <em>cross-hub comparison framework</em></span>
-          <span class="project-impact">Gap analysis</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Bilfinger<br>2026</span>
-          <span class="project-what">Designed KPI dashboard for global finance ops — <em>metric selection, calculation logic, measurement framework</em></span>
-          <span class="project-impact">Data-driven</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Klarna<br>2021–23</span>
-          <span class="project-what">A/B testing and lookalike analysis for campaign targeting across <em>49 million active users</em></span>
-          <span class="project-impact">49M users</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Personal<br>2026</span>
-          <span class="project-what">AI knowledge system — n8n pipeline extracting reasoning, concepts, causal relationships into <em>structured Obsidian knowledge bases</em></span>
-          <span class="project-impact">Reasoning → structure</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── ORBIT 3: AUTOMATION ─── -->
-  <section class="orbit orbit--3" data-width="52">
-    <div class="orbit-inner">
-      <div class="orbit-marker">03 — Automation & AI</div>
-      <h2 class="orbit-title">I automate <strong>the repetitive</strong></h2>
-      <p class="orbit-body">If a human is doing it more than twice, a machine should do it. Early AI adopter since 2020 — trained directly by OpenAI architects.</p>
-      <div class="projects">
-        <div class="project">
-          <span class="project-where">Klarna<br>2024</span>
-          <span class="project-what">Automated reporting dashboards for DACH enterprise key accounts — Google Apps Script</span>
-          <span class="project-impact">−45 min/acct/wk</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Bilfinger<br>2025</span>
-          <span class="project-what">Automated service catalog design layout on Power Apps — <em>eliminated manual design effort</em> that was consuming significant team hours</span>
-          <span class="project-impact">Design → automated</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Personal<br>2026</span>
-          <span class="project-what">AI knowledge pipeline — automated transcript extraction, LLM processing, structured output with visual mind maps</span>
-          <span class="project-impact">Full pipeline</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── ORBIT 4: STRATEGY ─── -->
-  <section class="orbit orbit--4" data-width="32">
-    <div class="orbit-inner">
-      <div class="orbit-marker">04 — Strategy & Transformation</div>
-      <h2 class="orbit-title">I think in strategy, <strong>then build</strong></h2>
-      <p class="orbit-body">The execution means nothing without the right framing. I start with the architecture of the problem.</p>
-      <div class="projects">
-        <div class="project">
-          <span class="project-where">Bilfinger<br>2026</span>
-          <span class="project-what">Drive strategic planning and co-moderate change management — partnering with Directors to build <em>global finance and HR transformation community</em></span>
-          <span class="project-impact">Culture shift</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Bilfinger<br>2025</span>
-          <span class="project-what">Standardized service catalog for BtR and OtC — defining offerings while identifying <em>AI and digitalization opportunities</em></span>
-          <span class="project-impact">Future-state</span>
-        </div>
-        <div class="project">
-          <span class="project-where">Klarna<br>2021–23</span>
-          <span class="project-what">Managed enterprise merchants — IKEA, Superdrug, Walmart. <em>Translated data into actionable campaign optimization insights</em></span>
-          <span class="project-impact">Enterprise accts</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── CONVERGENCE ─── -->
-  <section class="convergence" id="convergence">
-    <div class="convergence-dot"></div>
-    <h2 class="convergence-name">Sadegh Mousavi</h2>
-    <p class="convergence-line">Unapologetically high standards. <em>Because in every action I take and every goal I set, mediocrity is a choice I refuse to make.</em></p>
-  </section>
-
-  <!-- ─── QUIET ─── -->
-  <div class="quiet-area">
-    <div class="quiet-block">
-      <p class="quiet-label">Education</p>
-      <div class="edu-row">
-        <span class="edu-name">London School of Economics</span>
-        <span class="edu-detail">MSc Financial Economics · ML & Big Data</span>
-      </div>
-      <div class="edu-row">
-        <span class="edu-name">University of Mannheim</span>
-        <span class="edu-detail">MSc Economics</span>
-      </div>
-      <div class="edu-row">
-        <span class="edu-name">Shiraz University</span>
-        <span class="edu-detail">BA Economics · <span class="green">Ranked 1st</span> · Student of the Year</span>
-      </div>
-    </div>
-
-    <div class="quiet-block">
-      <p class="quiet-label">Recognition</p>
-      <div class="edu-row">
-        <span class="edu-name">Ranked 1st in Class of 2018</span>
-        <span class="edu-detail">Shiraz University</span>
-      </div>
-      <div class="edu-row">
-        <span class="edu-name">Mannheim Opportunity Scholarship</span>
-        <span class="edu-detail">2022–2024</span>
-      </div>
-      <div class="edu-row">
-        <span class="edu-name">HSE/LSE Tuition Fee Waiver</span>
-        <span class="edu-detail">2019</span>
-      </div>
-      <div class="edu-row">
-        <span class="edu-name">Student of the Year Award</span>
-        <span class="edu-detail">Alumni Association, Shiraz University · 2018</span>
-      </div>
-      <div class="edu-row">
-        <span class="edu-name">Creative Scientific Activities Award</span>
-        <span class="edu-detail">Shiraz University · 2018</span>
-      </div>
-    </div>
-
-    <div class="quiet-block">
-      <p class="quiet-label">Tools</p>
-      <p class="tools-text">
-        <span>Python</span> · <span>SQL</span> · <span>R</span> · <span>scikit-learn</span> · <span>Power Apps</span> · <span>n8n</span> · <span>Google Apps Script</span> · <span>API Integration</span> · <span>LLM Integration</span> · <span>Looker</span> · <span>Mixpanel</span> · <span>Signavio</span> · <span>Celonis</span> · <span>Jira</span> · <span>Trello</span> · <span>Miro</span> · <span>Salesforce</span> · <span>HubSpot</span> · <span>SAP FI</span> · <span>BPMN 2.0</span> · <span>Web Development</span>
-      </p>
-    </div>
-
-    <div class="footer-final">
-      <a href="/">← Home</a>
-      <a href="mailto:itssadeq@gmail.com">itssadeq@gmail.com</a>
+  <!-- LEFT: Hollow circles — empty, drifting -->
+  <div class="ego-side">
+    <div class="ego-cluster">
+      <div class="hollow-circle hc-1"><span>ego</span></div>
+      <div class="hollow-circle hc-2"><span>assumption</span></div>
+      <div class="hollow-circle hc-3"><span>bias</span></div>
+      <div class="hollow-circle hc-4"></div>
+      <div class="hollow-circle hc-5"></div>
     </div>
   </div>
 
+  <!-- RIGHT: Filled circles — dense, grounded, carrying real words -->
+  <div class="data-side">
+    <div class="data-glow"></div>
+    <div class="data-cluster">
+      <div class="filled-circle fc-1"><span>decisions grounded in data</span></div>
+      <div class="filled-circle fc-2"><span>probabilistic thinking</span></div>
+      <div class="filled-circle fc-3"><span>testable hypotheses</span></div>
+    </div>
+  </div>
+
+  <!-- Labels -->
+  <div class="label label-left">
+    <span class="label-text">volume without substance</span>
+  </div>
+  <div class="label label-right">
+    <span class="label-text">weight of evidence</span>
+  </div>
+
 </div>
-
-<script>
-// ─── SPIRAL CANVAS ───
-const canvas = document.getElementById('spiral-canvas');
-const ctx = canvas.getContext('2d');
-let scrollProgress = 0;
-let isInverted = false;
-
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener('resize', resize);
-
-// Get convergence element position for spiral target
-function getConvergenceCenter() {
-  const el = document.getElementById('convergence');
-  if (!el) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-  const rect = el.getBoundingClientRect();
-  return {
-    x: rect.left + rect.width / 2,
-    y: rect.top + rect.height * 0.35
-  };
-}
-
-function drawSpiral(progress) {
-  const w = canvas.width;
-  const h = canvas.height;
-  const cx = w / 2;
-  const cy = h / 2;
-
-  ctx.clearRect(0, 0, w, h);
-
-  const maxRadius = Math.max(w, h) * 0.5;
-  const turns = 5;
-  const totalAngle = turns * Math.PI * 2;
-  const points = 800;
-
-  // Determine colors based on inversion state
-  const green = isInverted ? 'rgba(26, 80, 56,' : 'rgba(58, 138, 101,';
-
-  // Inward spiral — synced exactly to convergence position
-  const inwardComplete = progress;
-
-  ctx.beginPath();
-  for (let i = 0; i <= points * inwardComplete; i++) {
-    const t = i / points;
-    const angle = t * totalAngle;
-    const radius = maxRadius * Math.pow(1 - t, 1.4);
-
-    const x = cx + Math.cos(angle) * radius;
-    const y = cy + Math.sin(angle) * radius;
-
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-
-  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius);
-  grad.addColorStop(0, green + '0.7)');
-  grad.addColorStop(0.15, green + '0.5)');
-  grad.addColorStop(0.4, green + '0.3)');
-  grad.addColorStop(1, green + '0.08)');
-
-  ctx.strokeStyle = grad;
-  ctx.lineWidth = 1.8;
-  ctx.stroke();
-
-  // Echo spiral (thinner)
-  if (inwardComplete > 0.1) {
-    ctx.beginPath();
-    for (let i = 0; i <= points * inwardComplete * 0.9; i++) {
-      const t = i / points;
-      const angle = t * totalAngle + 0.3;
-      const radius = maxRadius * Math.pow(1 - t, 1.4) * 0.92;
-
-      const x = cx + Math.cos(angle) * radius;
-      const y = cy + Math.sin(angle) * radius;
-
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = green + '0.06)';
-    ctx.lineWidth = 0.8;
-    ctx.stroke();
-  }
-
-  // Inward tip dot
-  if (inwardComplete > 0.05) {
-    const endT = inwardComplete;
-    const endAngle = endT * totalAngle;
-    const endRadius = maxRadius * Math.pow(1 - endT, 1.4);
-    const endX = cx + Math.cos(endAngle) * endRadius;
-    const endY = cy + Math.sin(endAngle) * endRadius;
-
-    ctx.beginPath();
-    ctx.arc(endX, endY, 3, 0, Math.PI * 2);
-    ctx.fillStyle = green + (0.4 + inwardComplete * 0.5).toFixed(2) + ')';
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(endX, endY, 12, 0, Math.PI * 2);
-    ctx.fillStyle = green + '0.08)';
-    ctx.fill();
-  }
-
-  // Center glow (grows as spiral nears center)
-  if (progress > 0.85) {
-    const intensity = Math.min(1, (progress - 0.85) / 0.15);
-    ctx.beginPath();
-    ctx.arc(cx, cy, 4 + intensity * 8, 0, Math.PI * 2);
-    ctx.fillStyle = green + (intensity * 0.4).toFixed(2) + ')';
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, 25 + intensity * 35, 0, Math.PI * 2);
-    ctx.fillStyle = green + (intensity * 0.06).toFixed(2) + ')';
-    ctx.fill();
-  }
-}
-
-// ─── SCROLL ───
-const widthBar = document.getElementById('widthBar');
-const convergence = document.getElementById('convergence');
-let spiralProgress = 0; // 0 = nothing drawn, 1 = fully tightened to center
-
-function onScroll() {
-  const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const overallProgress = Math.min(1, scrollTop / docHeight);
-
-  // Calculate spiral progress based on convergence element position
-  // Spiral should be 0 at page top and exactly 1 when convergence center hits viewport center
-  const convRect = convergence.getBoundingClientRect();
-  const convCenter = convRect.top + convRect.height * 0.35;
-  const viewCenter = window.innerHeight * 0.5;
-
-  // How far the convergence is from its trigger point
-  // When convCenter == viewCenter, spiralProgress == 1
-  // We measure from the convergence element's position in the full document
-  const convOffsetTop = convergence.offsetTop + convergence.offsetHeight * 0.35;
-  const triggerScroll = convOffsetTop - viewCenter;
-
-  if (triggerScroll > 0) {
-    spiralProgress = Math.min(1, scrollTop / triggerScroll);
-  } else {
-    spiralProgress = 1;
-  }
-
-  drawSpiral(spiralProgress);
-
-  // Width bar tightens
-  const barWidth = 100 - (overallProgress * 88);
-  widthBar.style.width = barWidth + '%';
-
-  // Trigger inversion exactly when spiral completes
-  if (convCenter <= viewCenter && convCenter > -convRect.height * 0.5) {
-    if (!isInverted) {
-      isInverted = true;
-      document.body.classList.add('inverted');
-      convergence.classList.add('reached');
-    }
-  } else if (convCenter > viewCenter + 80) {
-    if (isInverted) {
-      isInverted = false;
-      document.body.classList.remove('inverted');
-      convergence.classList.remove('reached');
-    }
-  }
-}
-
-window.addEventListener('scroll', onScroll, { passive: true });
-drawSpiral(0);
-
-// ─── OBSERVERS ───
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.classList.add('visible');
-  });
-}, { threshold: 0.12 });
-
-document.querySelectorAll('.orbit, .quiet-block, .footer-final').forEach(el => {
-  observer.observe(el);
-});
-</script>
 
 </body>
 </html>
