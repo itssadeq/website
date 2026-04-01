@@ -91,6 +91,8 @@
     transform: translateY(20px);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
     max-width: 560px;
+    position: relative;
+    z-index: 2;
   }
 
   .chapter.visible {
@@ -113,7 +115,7 @@
   }
 
   /* The compass line — the thesis, stands apart */
-  .chapter--compass {
+  .chapter--thesis {
     margin-top: 10vh;
     margin-bottom: 10vh;
     max-width: 640px;
@@ -122,24 +124,105 @@
     transition: border-color 0.8s ease;
   }
 
-  .chapter--compass .chapter-text {
+  .chapter--thesis .chapter-text {
     font-family: var(--serif);
     font-size: clamp(1.4rem, 2.5vw, 2rem);
     font-weight: 300;
     color: var(--text-bright);
     line-height: 1.35;
     letter-spacing: -0.02em;
+    font-style: italic;
     transition: color 0.8s ease;
+  }
+
+  /* ─── COMPASS (fixed right-side companion) ─── */
+
+  .compass-companion {
+    position: fixed;
+    top: 50%;
+    right: 15vw;
+    transform: translateY(-50%);
+    width: 336px;
+    height: 336px;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.8s ease-out;
+    pointer-events: none;
+  }
+
+  .compass-companion.visible {
+    opacity: 1;
+  }
+
+  .compass-companion.fade-out {
+    opacity: 0;
+  }
+
+  .compass-canvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .compass-glow-warm {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(58,138,101,0.45) 0%, rgba(45,107,79,0.1) 40%, transparent 70%);
+    transition: opacity 0.1s;
+  }
+
+  .compass-glow-cold {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(180,200,220,0.25) 0%, rgba(180,200,220,0.06) 40%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+
+  svg.compass-svg {
+    position: relative;
+    z-index: 2;
+    width: 336px;
+    height: 336px;
+  }
+
+  .c-cardinal { font-family: var(--mono); font-weight: 400; letter-spacing: 2.5px; text-transform: uppercase; transition: fill 0.3s; }
+  .c-label-comfort { font-size: 9px; fill: rgba(58,138,101,0.8); }
+  .c-label-challenge { font-size: 9px; fill: rgba(255,255,255,0.25); }
+  .c-cardinal-dim { font-size: 7px; fill: rgba(255,255,255,0.2); }
+  .c-ring { fill: none; stroke: rgba(255,255,255,0.12); stroke-width: 0.5; }
+  .c-ring-inner { fill: none; stroke: rgba(45,107,79,0.3); stroke-width: 0.5; transition: stroke 0.3s; }
+  .c-tick { stroke: rgba(255,255,255,0.2); stroke-width: 0.5; }
+  .c-tick-major { stroke: rgba(255,255,255,0.35); stroke-width: 0.8; }
+  .c-crosshair { stroke: rgba(255,255,255,0.08); stroke-width: 0.5; }
+  .c-needle-main { fill: rgba(255,255,255,0.95); filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); }
+  .c-needle-stub { fill: rgba(255,255,255,0.25); }
+  .c-needle-center { fill: #0a0a0a; stroke: rgba(255,255,255,0.6); stroke-width: 1; }
+  .c-needle-group { transform-origin: 210px 210px; }
+
+  @media (max-width: 1100px) {
+    .compass-companion {
+      display: none;
+    }
   }
 
   /* Transition into spiral */
   .narrative-bridge {
-    padding: 8vh 0 4vh;
+    padding: 4vh 0 4vh;
     border-top: 1px solid var(--text-ghost);
     margin-top: 4vh;
     opacity: 0;
     transform: translateY(15px);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out, border-color 0.8s ease;
+    position: relative;
+    z-index: 2;
   }
 
   .narrative-bridge.visible {
@@ -474,7 +557,7 @@
   /* ─── THREE CIRCLES (operating range) ─── */
 
   .circles-section {
-    max-width: 520px;
+    max-width: 560px;
     margin: 0 auto;
     padding: 6vh 2rem 2vh;
   }
@@ -538,7 +621,7 @@
   /* ─── DUALITY SECTION (post-convergence, inverted world) ─── */
 
   .duality {
-    max-width: 520px;
+    max-width: 560px;
     margin: 0 auto;
     padding: 0 2rem;
   }
@@ -659,7 +742,7 @@
   /* ─── QUIET SECTIONS ─── */
 
   .quiet-area {
-    max-width: 520px;
+    max-width: 560px;
     margin: 0 auto;
     padding: 0 2rem 5vh;
   }
@@ -826,31 +909,71 @@
 <div class="content">
 
   <!-- ─── NARRATIVE INTRO ─── -->
-  <div class="narrative">
+  <div class="narrative" id="narrative">
     <div class="narrative-label">The Story</div>
 
     <section class="chapter">
-      <p class="chapter-text">I graduated first in my class. Best economics school in my country. <span class="bright">Every award they had to give, I won it.</span> And then something dangerous happened. I got comfortable.</p>
+      <p class="chapter-text">When I was twenty-two, I ran into the one thing more dangerous than failure. <span class="bright">It came at the highest point of my success.</span></p>
+      <p class="chapter-text" style="margin-top: 1rem;">I had just graduated first in my class. Best economics program in my country. Every award they had to give, I won. And then it happened. <span class="bright">I got comfortable.</span></p>
+      <p class="chapter-text" style="margin-top: 1rem;"><span class="bright">That was the danger.</span></p>
     </section>
 
-    <section class="chapter chapter--compass">
+    <section class="chapter chapter--thesis">
       <p class="chapter-text">Comfort is my compass. When I feel it, I move in the opposite direction.</p>
     </section>
 
     <section class="chapter">
-      <p class="chapter-text">I set my sights on a top ten university in the world. Two years later, I walked out of the <span class="bright">London School of Economics</span> with a degree in Financial Economics.</p>
+      <p class="chapter-text">So I did what the compass told me. I set my sights on a top-ten university in the world. Two years later, I walked out of the <span class="bright">London School of Economics</span> with a degree in Financial Economics. Not because the name looked good. Because the hardest room I could find was there, and I needed to be in it.</p>
     </section>
 
     <section class="chapter">
-      <p class="chapter-text">That opened the door to <span class="bright">Klarna.</span> At the time, the most valuable fintech company in Europe. Three years. Eighteen countries. Forty-nine million users. I managed enterprise accounts, developed business, optimized internal processes, and owned the data, the KPIs, and the performance analysis behind it all. <span class="bright">I learned more in those three years than in all my degrees combined.</span></p>
-    </section>
-
-    <section class="chapter">
-      <p class="chapter-text">In parallel, another master's. Because I wanted to understand business models and innovation, not just economics.</p>
+      <p class="chapter-text">That opened the door to <span class="bright">Klarna.</span> At the time, the most valuable fintech company in Europe. Enterprise clients. Business development. Process optimization. Data, KPIs, performance analysis. Up close, each looked like a different career. <span class="bright">From a distance; one mind, working across all of it.</span></p>
     </section>
 
     <div class="narrative-bridge">
       <p class="narrative-bridge-text">And then I kept building ↓</p>
+    </div>
+  </div>
+
+  <!-- Compass companion (fixed right side) -->
+  <div class="compass-companion" id="compassCompanion">
+    <div class="compass-canvas">
+      <div class="compass-glow-warm" id="compassGlowWarm"></div>
+      <div class="compass-glow-cold" id="compassGlowCold"></div>
+      <svg class="compass-svg" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg">
+        <line class="c-crosshair" x1="210" y1="40" x2="210" y2="380"/>
+        <line class="c-crosshair" x1="40" y1="210" x2="380" y2="210"/>
+        <circle class="c-ring" cx="210" cy="210" r="170"/>
+        <circle class="c-ring" cx="210" cy="210" r="140"/>
+        <circle class="c-ring" cx="210" cy="210" r="110"/>
+        <circle class="c-ring c-ring-inner" id="cRing1" cx="210" cy="210" r="75"/>
+        <circle class="c-ring c-ring-inner" id="cRing2" cx="210" cy="210" r="40"/>
+        <line class="c-tick-major" x1="210" y1="40" x2="210" y2="52"/>
+        <line class="c-tick-major" x1="380" y1="210" x2="368" y2="210"/>
+        <line class="c-tick-major" x1="210" y1="380" x2="210" y2="368"/>
+        <line class="c-tick-major" x1="40" y1="210" x2="52" y2="210"/>
+        <line class="c-tick" x1="295" y1="62.7" x2="290" y2="71.3"/>
+        <line class="c-tick" x1="357.3" y1="125" x2="348.7" y2="130"/>
+        <line class="c-tick" x1="357.3" y1="295" x2="348.7" y2="290"/>
+        <line class="c-tick" x1="295" y1="357.3" x2="290" y2="348.7"/>
+        <line class="c-tick" x1="125" y1="357.3" x2="130" y2="348.7"/>
+        <line class="c-tick" x1="62.7" y1="295" x2="71.3" y2="290"/>
+        <line class="c-tick" x1="62.7" y1="125" x2="71.3" y2="130"/>
+        <line class="c-tick" x1="125" y1="62.7" x2="130" y2="71.3"/>
+        <text class="c-cardinal c-label-comfort" id="cLabelComfort" x="210" y="30" text-anchor="middle">comfort zone</text>
+        <text class="c-cardinal c-label-challenge" id="cLabelChallenge" x="210" y="404" text-anchor="middle">challenge zone</text>
+        <text class="c-cardinal c-cardinal-dim" x="395" y="214" text-anchor="start">safe</text>
+        <text class="c-cardinal c-cardinal-dim" x="25" y="214" text-anchor="end">easy</text>
+        <text class="c-cardinal c-cardinal-dim" x="325" y="72" text-anchor="middle">familiar</text>
+        <text class="c-cardinal c-cardinal-dim" x="95" y="72" text-anchor="middle">settled</text>
+        <text class="c-cardinal c-cardinal-dim" x="330" y="355" text-anchor="middle">uncertain</text>
+        <text class="c-cardinal c-cardinal-dim" x="90" y="355" text-anchor="middle">unknown</text>
+        <g class="c-needle-group" id="cNeedleGroup">
+          <polygon class="c-needle-stub" points="207,210 213,210 210,250"/>
+          <polygon class="c-needle-main" points="207.5,210 212.5,210 210,58"/>
+          <circle class="c-needle-center" cx="210" cy="210" r="5"/>
+        </g>
+      </svg>
     </div>
   </div>
 
@@ -1130,13 +1253,13 @@
 
     <div class="footer-final">
       <a href="/">← Home</a>
-      <a href="mailto:itssadeq@gmail.com">itssadeq@gmail.com</a>
+      <a href="/cdn-cgi/l/email-protection#a8c1dcdbdbc9cccdd9e8cfc5c9c1c486cbc7c5"><span class="__cf_email__" data-cfemail="d1b8a5a2a2b0b5b4a091b6bcb0b8bdffb2bebc">[email&#160;protected]</span></a>
     </div>
   </div>
 
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ─── SPIRAL CANVAS ───
 const canvas = document.getElementById('spiral-canvas');
 const ctx = canvas.getContext('2d');
@@ -1334,6 +1457,68 @@ document.querySelectorAll('.chapter, .narrative-bridge, .orbit, .circles-block, 
   observer.observe(el);
 });
 
+// ─── COMPASS COMPANION ───
+const compassCompanion = document.getElementById('compassCompanion');
+const narrativeEl = document.getElementById('narrative');
+const cNeedleGroup = document.getElementById('cNeedleGroup');
+const compassGlowWarm = document.getElementById('compassGlowWarm');
+const compassGlowCold = document.getElementById('compassGlowCold');
+const cLabelComfort = document.getElementById('cLabelComfort');
+const cLabelChallenge = document.getElementById('cLabelChallenge');
+const cRing1 = document.getElementById('cRing1');
+const cRing2 = document.getElementById('cRing2');
+
+function updateCompass() {
+  if (!compassCompanion || !narrativeEl || !cNeedleGroup) return;
+
+  const rect = narrativeEl.getBoundingClientRect();
+  const narrativeH = rect.height;
+  const viewH = window.innerHeight;
+
+  // Narrative progress: 0 when top of narrative hits viewport, 1 when bottom leaves
+  const scrolled = -rect.top;
+  const total = narrativeH - viewH;
+  const progress = Math.max(0, Math.min(1, scrolled / total));
+
+  // Show compass when narrative is between 10% and 95% scrolled — gentle fade
+  const fadeIn = Math.max(0, Math.min(1, (progress - 0.1) / 0.2));
+  const fadeOut = Math.max(0, Math.min(1, (0.95 - progress) / 0.15));
+  const visibility = Math.min(fadeIn, fadeOut);
+
+  if (visibility > 0) {
+    compassCompanion.style.opacity = visibility;
+    compassCompanion.style.display = '';
+  } else {
+    compassCompanion.style.opacity = 0;
+  }
+
+  // Needle rotates 180° across the narrative — slow and deliberate
+  const needleLinear = Math.max(0, Math.min(1, (progress - 0.05) / 0.9));
+  // Ease-in: slower at the beginning, catches up later
+  const needleProgress = needleLinear * needleLinear * (3 - 2 * needleLinear);
+  cNeedleGroup.style.transform = 'rotate(' + (needleProgress * 180) + 'deg)';
+
+  // Green glow fades out, cold glow fades in
+  if (compassGlowWarm) compassGlowWarm.style.opacity = 1 - needleProgress;
+  if (compassGlowCold) compassGlowCold.style.opacity = needleProgress * 0.8;
+
+  // Label transitions
+  const comfortAlpha = 0.8 - needleProgress * 0.65;
+  const challengeAlpha = 0.25 + needleProgress * 0.5;
+  if (cLabelComfort) cLabelComfort.style.fill = 'rgba(58,138,101,' + Math.max(comfortAlpha, 0.15) + ')';
+  if (cLabelChallenge) cLabelChallenge.style.fill = 'rgba(255,255,255,' + challengeAlpha + ')';
+
+  // Ring color shift
+  const r = Math.round(45 + needleProgress * 105);
+  const g = Math.round(107 - needleProgress * 7);
+  const b = Math.round(79 + needleProgress * 121);
+  const ringAlpha = 0.3 + needleProgress * 0.05;
+  if (cRing1) cRing1.style.stroke = 'rgba(' + r + ',' + g + ',' + b + ',' + ringAlpha + ')';
+  if (cRing2) cRing2.style.stroke = 'rgba(' + r + ',' + g + ',' + b + ',' + ringAlpha + ')';
+}
+
+window.addEventListener('scroll', updateCompass, { passive: true });
+updateCompass();
 </script>
 
 </body>
